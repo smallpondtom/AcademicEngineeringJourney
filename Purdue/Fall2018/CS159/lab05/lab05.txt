@@ -1,0 +1,275 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: lab05.c
+Submission: 2018-09-28 17:36
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	
+     2	/******************************************************************************
+     3	* Assignment:  LAB 05
+     4	* Lab Section: Tuesday, 11:30 am, SC Hall 189
+     5	* Description: verbose description of what the program does
+     6	* Programmers: Tomoki Koike koike@purdue.edu
+     7	*              Lauren Anderson ander867@purdue.edu
+     8	******************************************************************************/
+     9	#include <stdio.h>
+    10	#include <math.h>
+    11	#include <stdlib.h>
+    12	
+    13	int input(void); // gathers input number from use
+    14	int randomGen(int, int); // generates random number
+    15	int scale(int, int); // scales random numbers
+    16	int selectAngle(int); // generates loft angle
+    17	double travelTime(int, double); // calculates ball travel time
+    18	double travelDistance(double, double, double); // calculates ball distance
+    19	int rank1Gen(int, int, int); // calculates rank for golfer 1
+    20	int rank2Gen(int, int, int); // calculates rank for golfer 2
+    21	int rank3Gen(int, int, int); // calculates rank for golfer 3
+    22	double distanceHole(int, double); // calculates distance from hole
+    23	
+    24	int main ()
+    25	{
+    26	  // declarations
+    27	  int seed;            //the seed for the random number
+    28	  int clubNum1;        //the random club # from 1 to 3 
+    29	  int clubNum2;        //the random club # from 1 to 3
+    30	  int clubNum3;        //the random club # from 1 to 3
+    31	  int scaleDistance;   //the random distance from 300 to 500 (m)
+    32	  int randAngles1;     //the generated random angles #1  
+    33	  int randAngles2;     //the generated random angles #2
+    34	  int randAngles3;     //the generated random angles #3
+    35	  int randVel1;        //the generated random velocity #1
+    36	  int randVel2;        //the generated random velocity #2
+    37	  int randVel3;        //the generated random velocity #3
+    38	  double time1;        //the travel time of golfer 1
+    39	  double time2;        //the travel time of golfer 2
+    40	  double time3;        //the travel time of golfer 3
+    41	  double distance1;    //the travel distance of golfer 1
+    42	  double distance2;    //the travel distance of golfer 2
+    43	  double distance3;    //the travel distance of golfer 3
+    44	  double fromHole1;    //the distance from the hole of golfer 1
+    45	  double fromHole2;    //the distance from the hole of golfer 1
+    46	  double fromHole3;    //the distance from the hole of golfer 1
+    47	  int rank1;           //the rank of golfer1
+    48	  int rank2;           //the rank of golfer2
+    49	  int rank3;           //the rank of golfer3  
+    50	
+    51	  //Statements
+    52	  //user inputs random seed with input() 
+    53	  seed = input();
+    54	  srand(seed);
+    55	
+    56	  //generates random distance from 300m to 500m
+    57	  scaleDistance =  randomGen(300, 500);
+    58	  printf("\nDistance to the hole: %d m\n", scaleDistance);
+    59	  
+    60	  //generates the random values for the first golfer
+    61	  clubNum1 = randomGen(1,3);  //random club number
+    62	  randAngles1 = selectAngle(clubNum1); //the random angle
+    63	  randVel1 = randomGen(40, 60);
+    64	  
+    65	  //generates the random values for the second golfer 
+    66	  clubNum2 = randomGen(1,3);  //random club number
+    67	  randAngles2 = selectAngle(clubNum2); //the random angle
+    68	  randVel2 = randomGen(40, 60);
+    69	
+    70	  //generates the random values for the third golfer 
+    71	  clubNum3 = randomGen(1,3);  //random club number
+    72	  randAngles3 = selectAngle(clubNum3); //the random angle
+    73	  randVel3 = randomGen(40, 60);
+    74	
+    75	  //printing details #1
+    76	  printf("\nGolfer  Club  Loft Angle  Velocity\n");
+    77	  printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    78	  printf("  1:%7d%9d%10d m/s\n", clubNum1, randAngles1, randVel1);
+    79	  printf("  2:%7d%9d%10d m/s\n", clubNum2, randAngles2, randVel2 );
+    80	  printf("  3:%7d%9d%10d m/s\n", clubNum3, randAngles3, randVel3 );
+    81	  printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    82	 
+    83	  //calculating the travel times
+    84	  time1 = travelTime(randVel1, randAngles1);
+    85	  time2 = travelTime(randVel2, randAngles2);
+    86	  time3 = travelTime(randVel3, randAngles3);
+    87	 
+    88	  //calculating the travel distance
+    89	  distance1 = travelDistance(randVel1, randAngles1, time1);
+    90	  distance2 = travelDistance(randVel2, randAngles2, time2);
+    91	  distance3 = travelDistance(randVel3, randAngles3, time3);
+    92	  
+    93	  //calculating the distance from hole
+    94	  fromHole1 = distanceHole(scaleDistance, distance1);
+    95	  fromHole2 = distanceHole(scaleDistance, distance2);
+    96	  fromHole3 = distanceHole(scaleDistance, distance3);
+    97	
+    98	  //calculating the ranks of each golfer
+    99	  rank1 = rank1Gen(fromHole1, fromHole2, fromHole3);
+   100	  rank2 = rank2Gen(fromHole1, fromHole2, fromHole3);
+   101	  rank3 = rank3Gen(fromHole1, fromHole2, fromHole3);
+   102	  
+   103	  //printing details #2
+   104	  printf("Golfer   Time     Travel Distance   Distance From Hole  Rank\n");
+   105	  printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+   106	  printf("  1:%8.2lf s %12.1lf m %17.1lf m %9d \n", time1, distance1, fromHole1, rank1);
+   107	  printf("  2:%8.2lf s %12.1lf m %17.1lf m %9d \n", time2, distance2, fromHole2, rank2);
+   108	  printf("  3:%8.2lf s %12.1lf m %17.1lf m %9d \n", time3, distance3, fromHole3, rank3);    
+   109	  
+   110	  return 0;
+   111	}
+   112	
+   113	/******************************************************************************
+   114	* Function:     input
+   115	* Description: gathers input number from user
+   116	* Parameters:  void
+   117	* Return:      int, gathers input from user for the seed
+   118	******************************************************************************/
+   119	int input(void)
+   120	{
+   121	  int seed; // seed from input of user for random number generation
+   122	  printf("Enter a seed -> ");
+   123	  scanf("%d", &seed);
+   124	 
+   125	  return seed;
+   126	} // input
+   127	 
+   128	/******************************************************************************
+   129	* Function:    randomGen
+   130	* Description: generates random number
+   131	* Parameters:  num1, int, minimum number for scale
+   132	*              num2, int, maximum number for scale
+   133	* Return:      int, gathers min and max and uses scale function to scale values
+   134	******************************************************************************/
+   135	int randomGen(int num1, int num2)
+   136	{
+   137	  int scaleNum; // scale of numbers for random number generation
+   138	  scaleNum = scale(num1, num2);
+   139	  return scaleNum;
+   140	} // randomGen
+   141	
+   142	/******************************************************************************
+   143	* Function:    scale
+   144	* Description: scales numbers for random generation
+   145	* Parameters:  from, int, smallest number for scale
+   146	*              to, int, largest number for scale
+   147	* Return:      int, scales numbers in between min and max range
+   148	******************************************************************************/
+   149	int scale(int from, int to)
+   150	{ 
+   151	  int range; // range of numbers for scale
+   152	  range = to - from + 1;
+   153	  return rand() % range + from;
+   154	} // scale
+   155	
+   156	/******************************************************************************
+   157	* Function:    selectAngle
+   158	* Description: generates loft angle
+   159	* Parameters:  clubNum, int, club number
+   160	* Return:      int, generates random angle for specfic club number
+   161	******************************************************************************/
+   162	int selectAngle(int clubNum)
+   163	{
+   164	  int scaleAngle; // angle of lofted golf ball
+   165	 
+   166	  scaleAngle = randomGen(8 + (clubNum - 1) * 5 , 13 + (clubNum - 1) * 5);
+   167	
+   168	  return scaleAngle;
+   169	} // selectAngle
+   170	
+   171	/******************************************************************************
+   172	* Function:    travelTime
+   173	* Description: calculates time of travel of golf ball
+   174	* Parameters:  randomVel, int, velocity of ball
+   175	*              scaleAngle, double, angle of ball
+   176	* Return:      double, calculates time of travel using velocity and angle of ball
+   177	******************************************************************************/
+   178	double travelTime(int randomVel, double scaleAngle)
+   179	{
+   180	  float g = 9.8; //acceleration of gravity
+   181	  double time;    //the travel time 
+   182	  
+   183	  time = 2 * randomVel * sin(scaleAngle / 180 * M_PI) / g;
+   184	  // calculated time traveled of golf ball
+   185	  return time;
+   186	} // travelTime
+   187	
+   188	/******************************************************************************
+   189	* Function:    travelDistance
+   190	* Description: calculates the traveled distance of the golf ball
+   191	* Parameters:  randomVel, double, velocity of ball
+   192	*              scaleAngle, double, angle of ball
+   193	*              travelTime, double, travel time of ball
+   194	* Return:      double, calculates traveled distance using velocity, angle and time
+   195	******************************************************************************/
+   196	double travelDistance(double randomVel, double scaleAngle, double travelTime)
+   197	{
+   198	  double travelDistance = randomVel * cos(scaleAngle / 180 * M_PI) * travelTime;  // calculated traveled distance
+   199	  return travelDistance;
+   200	} // travelDistance
+   201	
+   202	/******************************************************************************
+   203	* Function:    rank1Gen
+   204	* Description: generates the rank of golfer 1
+   205	* Parameters:  distance1, int, distance of golf ball 1 from hole
+   206	*              distance2, int, distance of golf ball 2 from hole
+   207	*              distance3, int, distance of golf ball 3 from hole
+   208	* Return:      int, calculates rank of golfer 1 based off of distances from hole of each golf ball
+   209	******************************************************************************/
+   210	int rank1Gen(int fromHole1, int fromHole2, int fromHole3)
+   211	{
+   212	  int rank1; // rank of golfer 1 calculation
+   213	  rank1 = (fromHole1 / (fromHole2 + 1) + fromHole1 / (fromHole3 + 1) + 1);
+   214	  return rank1;
+   215	} // rank1Gen
+   216	
+   217	/******************************************************************************
+   218	* Function:    rank2Gen
+   219	* Description: generates the rank of golfer 2
+   220	* Parameters:  distance1, int, distance of golf ball 1 from hole
+   221	*              distance2, int, distance of golf ball 2 from hole
+   222	*              distance3, int, distance of golf ball 3 from hole
+   223	* Return:      int, calculates rank of golfer 2 based off of distances from hole of each golf ball
+   224	******************************************************************************/
+   225	int rank2Gen(int fromHole1, int fromHole2, int fromHole3)
+   226	{
+   227	  int rank2; // rank of golfer 2 calculation
+   228	  rank2 = (fromHole2 / (fromHole3 + 1) + fromHole2 / (fromHole1 + 1) + 1);
+   229	  return rank2;
+   230	} // rank2Gen
+   231	
+   232	/******************************************************************************
+   233	* Function:    rank3Gen
+   234	* Description: generates the rank of golfer 3
+   235	* Parameters:  distance1, int, distance of golf ball 1 from hole
+   236	*              distance2, int, distance of golf ball 2 from hole
+   237	*              distance3, int, distance of golf ball 3 from hole
+   238	* Return:      int, calculates rank of golfer 3 based off of distances from hole of each golf ball
+   239	******************************************************************************/
+   240	int rank3Gen(int fromHole1, int fromHole2, int fromHole3)
+   241	{
+   242	  int rank3; // rank of golfer 3 calculation
+   243	  rank3 = (fromHole3 / (fromHole2 + 1) + fromHole3 / (fromHole1 + 1) + 1);
+   244	  return rank3;
+   245	} // rank3Gen
+   246	
+   247	/******************************************************************************
+   248	* Function:    distanceHole
+   249	* Description: calculates distance from hole the golf ball is
+   250	* Parameters:  scaleDistance, int, total distance
+   251	*              distance, double, distance traveled
+   252	* Return:      double, calculates distance from whole using total distance minus distance traveled
+   253	******************************************************************************/
+   254	double distanceHole(int scaleDistance, double distance)
+   255	{
+   256	  double distanceFromHole; // calculated distance from hole variable
+   257	
+   258	  distanceFromHole = scaleDistance - distance;
+   259	  return distanceFromHole;
+   260	} // distanceHole

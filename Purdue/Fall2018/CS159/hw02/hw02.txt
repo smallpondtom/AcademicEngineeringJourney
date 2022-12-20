@@ -1,0 +1,66 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: hw02.c
+Submission: 2018-09-10 18:48
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  Homework#2
+     3	* Lab Section: Tuesday, 11:30, SC Hall 189
+     4	* Description: This program aims to calculate the length of the string 
+     5	* of a pendulum(consisting of a mass hanging from the ceiling with a string)
+     6	* with its period and also calculating the period of from its string length.
+     7	* Programmers: Tomoki Koike koike@purdue.edu
+     8	*             
+     9	*              
+    10	******************************************************************************/
+    11	
+    12	#include <stdio.h>
+    13	#include <math.h>
+    14	
+    15	int main(void)
+    16	{
+    17	  //Local Declarations
+    18	  double L_or_P;     //The length of the string or the period inputted by user  
+    19	  double period;     //The period of the pendulum
+    20	  double length;     //The length of the pendulum 
+    21	  double result;     //The calculated result either a period or a length
+    22	  int a;             //The option number inputted by user       
+    23	  char value1;       //The values or m for the entered value
+    24	  char value2;       //The values or m for the resulting value
+    25	  double freq;       //The frequency of the pendulum
+    26	
+    27	  //Statements 
+    28	  printf("Pendulum Calculations\n");
+    29	  printf("1. Given period calculate length\n");
+    30	  printf("2. Given length caluculate period\n");
+    31	  printf("Enter your option now -> ");
+    32	  scanf("%i", &a);
+    33	
+    34	  value1 = 115 + (a - 1) * (-6);
+    35	
+    36	  printf("\n\nEnter value in %c -> ", value1);
+    37	  scanf("%lf", &L_or_P );
+    38	  
+    39	  value2 = 109 + (a - 1) * 6;
+    40	  period = 2 * M_PI * sqrt(L_or_P / 9.8);
+    41	  length = L_or_P * L_or_P / 4 / M_PI / M_PI * 9.8 * (2 - a);
+    42	  result = period * (a - 1) + length;
+    43	  freq = ((a - 1) / period) + ((2 - a) / L_or_P);
+    44	
+    45	  printf("\n\nGiven value: %.2lf %c\n", L_or_P, value1);
+    46	  printf("Resulting value: %.2lf %c\n", result, value2);
+    47	  printf("Frequency: %.4lf Hz\n", freq);
+    48	
+    49	  return 0;
+    50	} //main
+    51	

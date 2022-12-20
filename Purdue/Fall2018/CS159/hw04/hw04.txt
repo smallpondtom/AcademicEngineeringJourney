@@ -1,0 +1,401 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: hw04.c
+Submission: 2018-10-12 21:55
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  hw04
+     3	* Lab Section: Tuesday, 11:30, SC Hall 189
+     4	* Description: This program conducts a calculation of a network consisting of five logic gates. The gates are assigned AND, NAND, OR, NOR, XOR, or XNOR by the user and the values 1 and 0 are calculated through the gates to give out a certtain result.
+     5	* Programmers: Tomoki Koike koike@purdue.edu        
+     6	******************************************************************************/
+     7	
+     8	#include <stdio.h>
+     9	#include <math.h>
+    10	
+    11	void instruction(void);
+    12	int gate1(void);
+    13	int gate2(void);
+    14	int gate3(void);
+    15	int gate4(void);
+    16	int gate5(void);
+    17	int processGate1(int);
+    18	int processGate2(int);
+    19	int processGate3(int, int, int);
+    20	int processGate4(int);
+    21	int processGate5(int, int, int);
+    22	void output(int);
+    23	
+    24	int main(void)
+    25	{
+    26	  int inputGate1;    //user input for gate 1
+    27	  int inputGate2;    //user input for gate 2
+    28	  int inputGate3;    //user input for gate 3
+    29	  int inputGate4;    //user input for gate 4
+    30	  int inputGate5;    //user input for gate 5
+    31	  int valueGate1;    //the output of gate 1
+    32	  int valueGate2;    //the output of gate 2
+    33	  int valueGate3;    //the output of gate 3
+    34	  int valueGate4;    //the output of gate 4
+    35	  int valueGate5;    //the output of gate 5 (the final result)
+    36	
+    37	  // printing out the very first instructions of the program
+    38	  instruction();
+    39	  
+    40	  // inputs by the user that governs the operations for the gates 
+    41	  inputGate1 = gate1();
+    42	  inputGate2 = gate2();
+    43	  inputGate3 = gate3();
+    44	  inputGate4 = gate4();
+    45	  inputGate5 = gate5();
+    46	  
+    47	  // process for the first gate
+    48	  valueGate1 = processGate1(inputGate1); 
+    49	  // process for the second gate
+    50	  valueGate2 = processGate2(inputGate2);
+    51	  // process for the third gate
+    52	  valueGate3 = processGate3(inputGate3, valueGate1, valueGate2);
+    53	  // process for the fourth gate
+    54	  valueGate4 = processGate4(inputGate4);
+    55	  // process for the fifth gate
+    56	  valueGate5 = processGate5(inputGate5, valueGate3, valueGate4);
+    57	  
+    58	  // print out the result
+    59	  output(valueGate5);
+    60	
+    61	  return 0;
+    62	} //main
+    63	
+    64	/******************************************************************************
+    65	* Function:    instruction  
+    66	* Description: printing out the very first instructions for the program
+    67	* Parameters:  none
+    68	* Return:      void
+    69	******************************************************************************/
+    70	void instruction(void)
+    71	{
+    72	  printf("Available gates for network\n");
+    73	  printf("\n1. AND\n");
+    74	  printf("2. NAND\n");
+    75	  printf("3. OR\n");
+    76	  printf("4. NOR\n");
+    77	  printf("5. XOR\n");
+    78	  printf("6. XNOR\n");
+    79	  return;
+    80	}
+    81	
+    82	/******************************************************************************
+    83	* Function:    gate1
+    84	* Description: accepts the input for the first gate from the user 
+    85	* Parameters:  none
+    86	* Return:      int, the integer from 1 to 6 inputted by the user
+    87	******************************************************************************/
+    88	int gate1(void)
+    89	{
+    90	  int inputGate1; //input for gate1 
+    91	  printf("\nEnter option for gate #1 -> ");
+    92	  scanf("%d", &inputGate1);
+    93	  return inputGate1;
+    94	} // gate1
+    95	
+    96	/******************************************************************************
+    97	* Function:    gate2
+    98	* Description: accepts the input for the second gate from the user 
+    99	* Parameters:  none
+   100	* Return:      int, the integer from 1 to 6 inputted by the user
+   101	******************************************************************************/
+   102	int gate2(void)
+   103	{
+   104	  int inputGate2; //input for gate 2 
+   105	  printf("Enter option for gate #2 -> ");
+   106	  scanf("%d", &inputGate2);
+   107	  return inputGate2;
+   108	} // gate2
+   109	
+   110	/******************************************************************************
+   111	* Function:    gate3
+   112	* Description: accepts the input for the third gate from the user 
+   113	* Parameters:  none
+   114	* Return:      int, the integer from 1 to 6 inputted by the user
+   115	******************************************************************************/
+   116	int gate3(void)
+   117	{
+   118	  int inputGate3; //input for gate 3
+   119	  printf("Enter option for gate #3 -> ");
+   120	  scanf("%d", &inputGate3);
+   121	  return inputGate3;
+   122	} // gate3
+   123	
+   124	/******************************************************************************
+   125	* Function:    gate4
+   126	* Description: accepts the input for the fourth gate from the user 
+   127	* Parameters:  none
+   128	* Return:      int, the integer from 1 to 6 inputted by the user
+   129	******************************************************************************/
+   130	int gate4(void)
+   131	{
+   132	  int inputGate4; //input for gate 4
+   133	  printf("Enter option for gate #4 -> ");
+   134	  scanf("%d", &inputGate4);
+   135	  return inputGate4;
+   136	} // gate4
+   137	
+   138	/******************************************************************************
+   139	* Function:    gate5
+   140	* Description: accepts the input for the fifth gate from the user 
+   141	* Parameters:  none
+   142	* Return:      int, the integer from 1 to 6 inputted by the user
+   143	******************************************************************************/
+   144	int gate5(void)
+   145	{
+   146	  int inputGate5; //input for gate 5
+   147	  printf("Enter option for gate #5 -> ");
+   148	  scanf("%d", &inputGate5);
+   149	  return inputGate5;
+   150	} // gate5
+   151	
+   152	/******************************************************************************
+   153	* Function:    processGate1
+   154	* Description: logical operation for the first gate 
+   155	* Parameters:  inputGate1, the user input for the gate 1 operation
+   156	* Return:      int, the calculated result of the locial operation 
+   157	******************************************************************************/
+   158	int processGate1(int inputGate1)
+   159	{
+   160	  int outputGate1;  //the output of the logical operator for the first gate
+   161	  
+   162	  if (inputGate1 == 1)
+   163	  {
+   164	    outputGate1 = 1 && 0;
+   165	    printf("\nEvaluating Gate #1: 1 AND 0 = 0\n");
+   166	  }
+   167	  else if (inputGate1 == 2) 
+   168	  {
+   169	    outputGate1 = !(1 && 0);
+   170	    printf("\nEvaluating Gate #1: 1 NAND 0 = 1\n");
+   171	  }
+   172	  else if (inputGate1 == 3)
+   173	  {
+   174	    outputGate1 = 1 || 0;
+   175	    printf("\nEvaluating Gate #1: 1 OR 0 = 1\n");
+   176	  }
+   177	  else if (inputGate1 == 4)
+   178	  {
+   179	    outputGate1 = !(1 || 0);
+   180	    printf("\nEvaluating Gate #1: 1 NOR 0 = 0\n");
+   181	  }
+   182	  else if (inputGate1 == 5)
+   183	  {
+   184	    outputGate1 = 1 != 0;
+   185	    printf("\nEvaluating Gate #1: 1 XOR 0 = 1\n");
+   186	  }
+   187	  else 
+   188	  {
+   189	    outputGate1 = !(1 != 0);
+   190	    printf("\nEvaluating Gate #1: 1 XNOR 0 = 0\n");  
+   191	  }
+   192	  
+   193	  return outputGate1;
+   194	}
+   195	
+   196	/******************************************************************************
+   197	* Function:    processGate2
+   198	* Description: logical operation for the second gate 
+   199	* Parameters:  inputGate2, the user input of the gate 2 operation
+   200	* Return:      int, the calculated result of the locial operation 
+   201	******************************************************************************/
+   202	int processGate2(int inputGate2)
+   203	{
+   204	  int outputGate2;  //the output of the logical operator for the second gate
+   205	  
+   206	  if (inputGate2 == 1)
+   207	  {
+   208	    outputGate2 = 1 && 1;
+   209	    printf("Evaluating Gate #2: 1 AND 1 = 1\n");
+   210	  }
+   211	  else if (inputGate2 == 2) 
+   212	  {
+   213	    outputGate2 = !(1 && 1);
+   214	    printf("Evaluating Gate #2: 1 NAND 1 = 0\n");
+   215	  }
+   216	  else if (inputGate2 == 3)
+   217	  {
+   218	    outputGate2 = 1 || 1;
+   219	    printf("Evaluating Gate #2: 1 OR 1 = 1\n");
+   220	  }
+   221	  else if (inputGate2 == 4)
+   222	  {
+   223	    outputGate2 = !(1 || 1);
+   224	    printf("Evaluating Gate #2: 1 NOR 1 = 1\n");
+   225	  }
+   226	  else if (inputGate2 == 5)
+   227	  {
+   228	    outputGate2 = 1 != 1;
+   229	    printf("Evaluating Gate #2: 1 XOR 1 = 0\n");  
+   230	  }
+   231	  else 
+   232	  {
+   233	    outputGate2 = !(1 != 1);
+   234	    printf("Evaluating Gate #2: 1 XNOR 1 = 1\n");
+   235	  }
+   236	
+   237	  return outputGate2;
+   238	}
+   239	
+   240	/******************************************************************************
+   241	* Function:    processGate3
+   242	* Description: logical operation for the third gate 
+   243	* Parameters:  inputGate3, the user input of the gate 3 operation
+   244	*              valueGate1, the output of the gate 1 operation 
+   245	*              valueGate2, the output of the gate 2 operation 
+   246	* Return:      int, the calculated result of the locial operation 
+   247	******************************************************************************/
+   248	int processGate3(int inputGate3, int valueGate1, int valueGate2)
+   249	{
+   250	  int outputGate3;  //the output of the logical operator for the third gate
+   251	  
+   252	  if (inputGate3 == 1)
+   253	  {
+   254	    outputGate3 = valueGate1 && valueGate2;
+   255	    printf("Evaluating Gate #3: %d AND %d = %d\n", valueGate1, valueGate2, outputGate3);
+   256	  }
+   257	  else if (inputGate3 == 2) 
+   258	  {
+   259	    outputGate3 = !(valueGate1 && valueGate2);
+   260	    printf("Evaluating Gate #3: %d NAND %d = %d\n", valueGate1, valueGate2, outputGate3);
+   261	  }
+   262	  else if (inputGate3 == 3)
+   263	  {
+   264	    outputGate3 = valueGate1 || valueGate2;
+   265	    printf("Evaluating Gate #3: %d OR %d = %d\n", valueGate1, valueGate2, outputGate3);
+   266	  }
+   267	  else if (inputGate3 == 4)
+   268	  {
+   269	    outputGate3 = !(valueGate1 || valueGate2);
+   270	    printf("Evaluating Gate #3: %d NOR %d = %d\n", valueGate1, valueGate2, outputGate3);
+   271	  }
+   272	  else if (inputGate3 == 5)
+   273	  {
+   274	    outputGate3 = valueGate1 != valueGate2;
+   275	    printf("Evaluating Gate #3: %d XOR %d = %d\n", valueGate1, valueGate2, outputGate3);    
+   276	  }
+   277	  else 
+   278	  {
+   279	    outputGate3 = !(valueGate1 != valueGate2);
+   280	    printf("Evaluating Gate #3: %d XNOR %d = %d\n", valueGate1, valueGate2, outputGate3);    
+   281	  }
+   282	
+   283	  return outputGate3;
+   284	}
+   285	
+   286	/******************************************************************************
+   287	* Function:    processGate4
+   288	* Description: logical operation for the fourth gate 
+   289	* Parameters:  inputGate4, the user input of the gate 4 operation
+   290	* Return:      int, the calculated result of the locial operation 
+   291	******************************************************************************/
+   292	int processGate4(int inputGate4)
+   293	{
+   294	  int outputGate4;  //the output of the logical operator for the fourth gate
+   295	  if (inputGate4 == 1)
+   296	  {
+   297	    outputGate4 = 0 && 0;
+   298	    printf("Evaluating Gate #4: 0 AND 0 = %d\n", outputGate4);   
+   299	  }
+   300	  else if (inputGate4 == 2) 
+   301	  {
+   302	    outputGate4 = !(0 && 0);
+   303	    printf("Evaluating Gate #4: 0 NAND 0 = %d\n", outputGate4);    
+   304	  }
+   305	  else if (inputGate4 == 3)
+   306	  {
+   307	    outputGate4 = 0 || 0;
+   308	    printf("Evaluating Gate #4: 0 OR 0 = %d\n", outputGate4);    
+   309	  }
+   310	  else if (inputGate4 == 4)
+   311	  {
+   312	    outputGate4 = !(0 || 0);
+   313	    printf("Evaluating Gate #4: 0 NOR 0 = %d\n", outputGate4);
+   314	  }
+   315	  else if (inputGate4 == 5)
+   316	  {
+   317	    outputGate4 = 0 != 0;
+   318	    printf("Evaluating Gate #4: 0 XOR 0 = %d\n", outputGate4);
+   319	  }
+   320	  else 
+   321	  {
+   322	    outputGate4 = !(0 != 0);
+   323	    printf("Evaluating Gate #4: 0 XNOR 0 = %d\n", outputGate4);    
+   324	  }
+   325	
+   326	  return outputGate4;
+   327	}
+   328	
+   329	/******************************************************************************
+   330	* Function:    processGate5
+   331	* Description: logical operation for the fifth gate 
+   332	* Parameters:  inputGate5, the user input of the gate 5 operation
+   333	*              valueGate3, the output of the gate 3 operation 
+   334	*              valueGate4, the output of the gate 4 operation 
+   335	* Return:      int, the calculated result of the locial operation 
+   336	******************************************************************************/
+   337	int processGate5(int inputGate5, int valueGate3, int valueGate4)
+   338	{
+   339	  int outputGate5;  //the output of the logical operator for the third gate
+   340	  
+   341	  if (inputGate5 == 1)
+   342	  {
+   343	    outputGate5 = valueGate3 && valueGate4;
+   344	    printf("Evaluating Gate #5: %d AND %d = %d\n", valueGate3, valueGate4, outputGate5);
+   345	  }
+   346	  else if (inputGate5 == 2) 
+   347	  {
+   348	    outputGate5 = !(valueGate3 && valueGate4);
+   349	    printf("Evaluating Gate #5: %d NAND %d = %d\n", valueGate3, valueGate4, outputGate5);    
+   350	  }
+   351	  else if (inputGate5 == 3)
+   352	  {
+   353	    outputGate5 = valueGate3 || valueGate4;
+   354	    printf("Evaluating Gate #5: %d OR %d = %d\n", valueGate3, valueGate4, outputGate5);    
+   355	  }
+   356	  else if (inputGate5 == 4)
+   357	  {
+   358	    outputGate5 = !(valueGate3 || valueGate4);
+   359	    printf("Evaluating Gate #5: %d NOR %d = %d\n", valueGate3, valueGate4, outputGate5);   
+   360	  }
+   361	  else if (inputGate5 == 5)
+   362	  {
+   363	    outputGate5 = valueGate3 != valueGate4;
+   364	    printf("Evaluating Gate #5: %d XOR %d = %d\n", valueGate3, valueGate4, outputGate5);    
+   365	  }
+   366	  else 
+   367	  {
+   368	    outputGate5 = !(valueGate3 != valueGate4);
+   369	    printf("Evaluating Gate #5: %d XNOR %d = %d\n", valueGate3, valueGate4, outputGate5);    
+   370	  }
+   371	
+   372	  return outputGate5;
+   373	}
+   374	
+   375	/******************************************************************************
+   376	* Function:    output
+   377	* Description: printing out the result 
+   378	* Parameters:  valueGate5, int, the output of gate 5 logical operation
+   379	* Return:      none
+   380	******************************************************************************/
+   381	void output(int valueGate5)
+   382	{
+   383	  printf("\nFinal Result: %d\n", valueGate5);
+   384	  return;
+   385	}
+   386	

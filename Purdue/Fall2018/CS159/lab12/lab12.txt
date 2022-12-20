@@ -1,0 +1,359 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: lab12.c
+Submission: 2018-12-03 09:21
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  lab12
+     3	* Lab Section: Tuesday, 11:30, SC Hall
+     4	* Description: This program will accept data of test scores from two classes and based on the maximum value of total test score and the minimum number of students the program will select test scores and sum them up so that the final value does not surpass the maximum value. The outputs will be the sorted test scores and the total of scores along with the number of student test scores are used to generate the total. 
+     5	* Programmers: Tomoki Koike, koike@purdue.edu
+     6	*              Madison Green, green326@purdue.edu
+     7	*              Daniel Cinal, dcinal@purdue.edu
+     8	******************************************************************************/
+     9	#include <stdio.h>
+    10	#include <math.h>
+    11	#define SIZE 30
+    12	
+    13	// function declarations
+    14	int inputData1(int []);
+    15	int inputData2(int []);
+    16	int input3(void);
+    17	int input4(int, int);
+    18	int compare_length_short(int, int);
+    19	int compare_length_long(int, int);
+    20	void sort(int [], int);
+    21	int cal_total(int [], int [], int, int, int*, int, int);
+    22	void output(int [], int [], int, int, int, int, int, int);
+    23	
+    24	int main(void)
+    25	{
+    26	  // local declarations 
+    27	  int array1[SIZE] = {0}; // array of team 1
+    28	  int array2[SIZE] = {0}; // array of team 2 
+    29	  int len1; // length of array1
+    30	  int len2; // length of array2
+    31	  int max; // the maximum test score
+    32	  int student_min; // the minimum number of student scores
+    33	  int members = 0; // counter
+    34	  int teamTotal; // team total
+    35	  
+    36	  // statements 
+    37	  // accept the user inputs of two class arrays 
+    38	  len1 = inputData1(array1);
+    39	  len2 = inputData2(array2);
+    40	  // accept user inputs of the maximum test score 
+    41	  // and the minimum number of test scores
+    42	  max = input3();
+    43	  student_min = input4(len1, len2);
+    44	  printf("\n");
+    45	  // sorting the arrays 
+    46	  sort(array1, len1);
+    47	  sort(array2, len2);
+    48	  // calculating the team total the number of student scores
+    49	  teamTotal = cal_total(array1, array2, max, student_min, &members, len1, len2);
+    50	  // printing out the final outputs 
+    51	  output(array1, array2, len1, len2, teamTotal, members, student_min, max);
+    52	
+    53	  return 0;
+    54	} // main
+    55	
+    56	/******************************************************************************
+    57	* Function:    inputData1
+    58	* Description: The first user input of test scores of class one
+    59	* Parameters:  array[], int, predefined array of test scores 
+    60	* Return:      int, the length of the array with non-zero values
+    61	******************************************************************************/
+    62	int inputData1(int array[])
+    63	{
+    64	  int i = 0;       // counter
+    65	  int element = 1; // user input
+    66	
+    67	  printf("Enter student math scores for class #1 -> ");
+    68	  while (i < SIZE && element != EOF)
+    69	  {
+    70	    scanf("%d", &array[i]);
+    71	    element = array[i];
+    72	    i++;
+    73	  }
+    74	  if (array[SIZE - 1] != -1 && array[SIZE - 1] != 0)
+    75	  {
+    76	    i++;
+    77	  }
+    78	
+    79	  return --i;
+    80	} // inputData1
+    81	
+    82	/******************************************************************************
+    83	* Function:    inputData2
+    84	* Description: The first user input of test scores of class two
+    85	* Parameters:  array[], int, predefined array of test scores 
+    86	* Return:      int, the length of the array with non-zero values
+    87	******************************************************************************/
+    88	int inputData2(int array[])
+    89	{
+    90	  int i = 0;       // counter
+    91	  int element = 1; // user input
+    92	
+    93	  printf("Enter student math scores for class #2 -> ");
+    94	  while (i < SIZE && element != EOF)
+    95	  {
+    96	    scanf("%d", &array[i]);
+    97	    element = array[i];
+    98	    i++;
+    99	  }
+   100	  if (array[SIZE - 1] != -1 && array[SIZE - 1] != 0)
+   101	  {
+   102	    i++;
+   103	  }
+   104	
+   105	  return --i;
+   106	} // inputData2
+   107	
+   108	/******************************************************************************
+   109	* Function:    compare_length_short
+   110	* Description: Outputs the shorter length which are the outputs of the two input functions 
+   111	* Parameters:  len1, int, length of the first array
+   112	*              len2, int, length of the second array 
+   113	* Return:      int, the shorter length
+   114	******************************************************************************/
+   115	int compare_length_short(int len1, int len2)
+   116	{
+   117	  int shorter; // shorter length 
+   118	  
+   119	  if (len1 > len2)
+   120	  {
+   121	    shorter = len2;
+   122	  }
+   123	  else 
+   124	  {
+   125	    shorter = len1;
+   126	  }
+   127	
+   128	  return shorter;
+   129	} // compare_length_short
+   130	
+   131	/******************************************************************************
+   132	* Function:    compare_length_long
+   133	* Description: Outputs the longer length which are the outputs of the two input functions 
+   134	* Parameters:  len1, int, length of the first array
+   135	*              len2, int, length of the second array 
+   136	* Return:      int, the longer length
+   137	******************************************************************************/
+   138	int compare_length_long(int len1, int len2)
+   139	{
+   140	  int longer; // shorter length
+   141	
+   142	  if (len1 > len2)
+   143	  {
+   144	    longer = len1;
+   145	  }
+   146	  else
+   147	  {
+   148	    longer = len2;
+   149	  }
+   150	
+   151	  return longer;
+   152	} // compare_length_long
+   153	
+   154	/******************************************************************************
+   155	* Function:    input3
+   156	* Description: Accepts the user input of the maximum test total
+   157	* Parameters:  void
+   158	* Return:      int, the maximum test total
+   159	******************************************************************************/
+   160	int input3(void)
+   161	{
+   162	  int max; // the set team total
+   163	
+   164	  do
+   165	  {
+   166	    printf("Enter maximum team test total -> ");
+   167	    scanf("%d", &max);
+   168	    if (max <= 0)
+   169	    {
+   170	      printf("\nError! Team test total must be positive!!\n\n");
+   171	    }
+   172	  } while (max <= 0);
+   173	  return max;
+   174	} // input3
+   175	
+   176	/******************************************************************************
+   177	* Function:    input4 
+   178	* Description: Accepts the user input of the minimum number of student scores that must be used for the sum
+   179	* Parameters:  len1, int, the length of the first array 
+   180	*              len2, int, the length of the second array 
+   181	* Return:      int, the minimum number of test scores 
+   182	******************************************************************************/
+   183	int input4(int len1, int len2)
+   184	{
+   185	  int student_min; // the set team total
+   186	  int limit; // the shorter length of the either two classes
+   187	  
+   188	  // obtains the shorter length of the classes 
+   189	  limit = compare_length_short(len1, len2);
+   190	
+   191	  do
+   192	  {
+   193	    printf("Enter minimum number of students to select from a class -> ");
+   194	    scanf("%d", &student_min);
+   195	    if (student_min > limit)
+   196	    {
+   197	      printf("\nError! Number to select cannot exceed %d!!\n\n", limit);
+   198	    }
+   199	    else if (student_min <= 0)
+   200	    {
+   201	      printf("\nError! Number to select must be positive!!\n\n");
+   202	    }
+   203	  } while ( student_min > limit || student_min <= 0);
+   204	  return student_min;
+   205	} // input4
+   206	
+   207	/******************************************************************************
+   208	* Function:    sort
+   209	* Description: Conducts insertion sort for the array 
+   210	* Parameters:  array[], int, the predefined array 
+   211	*              len, int, the length of the array
+   212	* Return:      void
+   213	******************************************************************************/
+   214	void sort(int array[], int len)
+   215	{
+   216	  int i;  // counter
+   217	  int j;  // counter 
+   218	  int temp; // temporary element 
+   219	
+   220	  for (i = 1; i < len; i++)
+   221	  {
+   222	    temp = array[i];
+   223	    j = i - 1;
+   224	    while (temp > array[j] && j >= 0)
+   225	    {
+   226	      array[j + 1] = array[j];
+   227	      j--;
+   228	    }
+   229	    array[j + 1] = temp;
+   230	  }
+   231	
+   232	  return;
+   233	} // sort
+   234	
+   235	/******************************************************************************
+   236	* Function:    cal_total 
+   237	* Description: Calculates the total test score depending on the maximum limit and the minimum limit of students 
+   238	* Parameters:  sorted_array1[], int, the sorted first array 
+   239	*              sorted_array[], int, the sorted second array
+   240	*              max, int, the maximum test score
+   241	*              student_min, int, the minimum number test scores 
+   242	*              *counter, int, the counter that counts the number of students scores used for the calculation which is passed by address
+   243	*              len1, int, the length of the first array
+   244	*              len2, int, the length of the second array
+   245	* Return:      int, the calculated total
+   246	******************************************************************************/
+   247	int cal_total(int sorted_array1[], int sorted_array2[], int max, int student_min, int *counter, int len1, int len2)
+   248	{
+   249	  int team_total = 0; // the team total
+   250	  int hold1; // the value holder for the team total
+   251	  int hold2; // another value holder for team total 
+   252	  int i = 0; // counter
+   253	  int ct = student_min; // counter
+   254	  int element1; // the i-th element in array one
+   255	  int element2; // the i-th element in array two
+   256	  int longer; // longer length
+   257	
+   258	  // find longer length
+   259	  longer = compare_length_long(len1, len2);
+   260	
+   261	  for (i = 0; i < student_min; i++)  
+   262	  {
+   263	    team_total += sorted_array1[i];
+   264	  }
+   265	  for (i = 0; i < student_min; i++)
+   266	  {
+   267	    team_total += sorted_array2[i];
+   268	  }
+   269	  *counter += student_min*2; 
+   270	  if (team_total <= max)
+   271	  {
+   272	    // counter (ct) is initialized as student_min
+   273	    while (ct < longer)
+   274	    {
+   275	      element1 = sorted_array1[ct];
+   276	      element2 = sorted_array2[ct];
+   277	      hold1 = team_total + element1;
+   278	      //printf("hold1: %d, hold2: %d\n", hold1,hold2);
+   279	      if (hold1 <= max && element1 != EOF && element1 != 0)
+   280	      {
+   281	        team_total += element1;
+   282	        *counter += 1;
+   283	      }
+   284	      if (hold1 > max)
+   285	      {
+   286	        ct += longer;
+   287	      }
+   288	      hold2 = team_total + element2;
+   289	      if (hold2 <= max && element2 != EOF && element2 != 0)
+   290	      {
+   291	        team_total += element2;
+   292	        *counter += 1;
+   293	      }
+   294	      ct++;
+   295	    }
+   296	  }
+   297	  else
+   298	  {
+   299	    team_total = 0;
+   300	  }
+   301	  return team_total;        
+   302	} //cal_total
+   303	
+   304	/******************************************************************************
+   305	* Function:    output
+   306	* Description: Prints out the final outputs 
+   307	* Parameters:  array1[], int, the first array
+   308	*              array2[], int, the second array 
+   309	*              len1, int, the length of the first array
+   310	*              len2, int, the length of the second array
+   311	*              team_total, int, the calculated team total
+   312	*              students, int, the number of student scores 
+   313	*              student_min, int, the minimum limit of student scores 
+   314	*              max, int, the maximum limit of the test score total
+   315	* Return:      void
+   316	******************************************************************************/
+   317	void output(int array1[], int array2[], int len1, int len2, int team_total, int students, int student_min, int max)
+   318	{
+   319	  int i; // counter
+   320	  int ct; // counter
+   321	
+   322	  printf("Class #1 Students Sorted: ");
+   323	  for (i = 0; i < len1; i++)
+   324	  { 
+   325	    printf("%d ", array1[i]);  
+   326	  }
+   327	  printf("\nClass #2 Students Sorted: ");
+   328	  for (ct = 0; ct < len2; ct++)
+   329	  {
+   330	    printf("%d ", array2[ct]);
+   331	  }
+   332	
+   333	  if (team_total != 0)
+   334	  {
+   335	    printf("\nTeam total: %d", team_total);
+   336	    printf("\nTeam members: %d\n", students);
+   337	  }
+   338	  else 
+   339	  {
+   340	    printf("\nResult: Cannot create a team with %d members and fewer than %d points.\n", student_min * 2, max);
+   341	  }
+   342	
+   343	  return;
+   344	} // output 

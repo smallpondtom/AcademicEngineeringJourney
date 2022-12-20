@@ -1,0 +1,219 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: hw05.c
+Submission: 2018-10-31 21:07
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  hw 05
+     3	* Lab Section  Tuesday, 11:30, SC Hall 
+     4	* Description: This program uses an user input which is a integer and rotates the number to figure out the maximum and minimum number that can be formed by the number in the digits of the given integer.
+     5	* Programmers: Tomoki Koike koike@purdue.edu
+     6	******************************************************************************/
+     7	#include <stdio.h>
+     8	#include <math.h>
+     9	
+    10	//function declarations 
+    11	long long int userInput(void);
+    12	int loopCounter(long long int);
+    13	long long int rotater(long long int, long long int);
+    14	void valRegister(long long int, long long int, long long int *minReg, long long int *maxReg);
+    15	void output(long long int, long long int);
+    16	
+    17	int main(void)
+    18	{
+    19	  //local declarations 
+    20	  long long int inputInt;  //the user input 
+    21	  long long int minReg = 1; //the register for the minimum value
+    22	  long long int maxReg = 1; //the register for the maximm value 
+    23	  long long int rotInt; //the rotated input
+    24	  int counter; //the limit of the for loop
+    25	  int n; //the counter for the for loop
+    26	
+    27	  //statements
+    28	  //accept user input
+    29	  do
+    30	  {
+    31	    inputInt = userInput();
+    32	  } while(inputInt <=  0);
+    33	  
+    34	  //find the counter for how many times we want to conduct the loop below
+    35	  counter = loopCounter(inputInt);
+    36	  
+    37	  //initialize the registers
+    38	  minReg = inputInt;
+    39	  maxReg = inputInt; 
+    40	
+    41	  //loop that rotates the input and then assigns the value to a register with the values of the minimum and the maximum
+    42	  for (n=1; n <= counter; n++)
+    43	  {
+    44	    if (n == 1)
+    45	    {
+    46	      //function that rotates the input 
+    47	      rotInt = rotater(inputInt, inputInt);
+    48	      //function that assigns the rotated value to a register
+    49	      valRegister(inputInt, rotInt, &minReg, &maxReg);
+    50	    }
+    51	    else
+    52	    { 
+    53	      rotInt = rotater(rotInt, inputInt);
+    54	      valRegister(inputInt, rotInt, &minReg, &maxReg);
+    55	    }
+    56	  }
+    57	  
+    58	  //output
+    59	  output(minReg, maxReg);
+    60	  return 0;
+    61	} //main
+    62	
+    63	/******************************************************************************
+    64	* Function:    input 
+    65	* Description: user input integer
+    66	* Parameters:  void
+    67	* Return:      int, the user input 
+    68	******************************************************************************/ 
+    69	long long int userInput(void)
+    70	{
+    71	  long long int input; //the user input 
+    72	
+    73	  printf("\nEnter integer to rotate -> ");
+    74	  scanf("%lld", &input);
+    75	  
+    76	  if (input <= 0)
+    77	  {
+    78	    printf("\nError! Positive integers only!!\n");
+    79	  }
+    80	
+    81	  return input;
+    82	} //userInput
+    83	
+    84	/******************************************************************************
+    85	* Function:    function name
+    86	* Description: brief description of what the function does
+    87	* Parameters:  variable1 name, data type, and description
+    88	*              variable2 name, data type, and description
+    89	* Return:      data type and description
+    90	******************************************************************************/
+    91	int loopCounter(long long int input)
+    92	{
+    93	  int counter = 0; //the counter for how many times we want to conduct the loop in the main
+    94	  while (input)
+    95	  {
+    96	    input /= 10;
+    97	    counter++;
+    98	  }
+    99	  --counter;
+   100	
+   101	  return counter;
+   102	}
+   103	
+   104	/******************************************************************************
+   105	* Function:    rotater
+   106	* Description: rotates the input 
+   107	* Parameters:  long long int, input, the user input
+   108	*              long long int, minRegister, register for the minimum value
+   109	*              long long int, maxRegister, register for the maximum value
+   110	* Return:      long long int, rotInput
+   111	******************************************************************************/
+   112	long long int rotater(long long int input, long long int originalInput)
+   113	{
+   114	  int multiplier1 = 0;   //the multiplier used in the modulus
+   115	  int multiplier2 = 0;   //the multiplier for original value
+   116	  long long int rotInt; //the rotated input
+   117	  long long int saveInput; //variable to save the orignal input
+   118	  int firstDigit; //the first digit of the rotated value
+   119	  //int firstDigitCal; //statement which calculates the first digit
+   120	  
+   121	  //save the original input value 
+   122	  saveInput = input;
+   123	 
+   124	  //get the number of digits for the original input
+   125	  while (originalInput)
+   126	  {
+   127	    originalInput /= 10;
+   128	    multiplier2++;
+   129	  }
+   130	
+   131	  //gets the multiplier to extract the number in the largest digit for the looping input
+   132	  while (input)
+   133	  {
+   134	    input /= 10;
+   135	    multiplier1++;
+   136	  }
+   137	  
+   138	  //adjust the multiplier to make it equal to the number of digits in the input 
+   139	  --multiplier1;
+   140	  --multiplier2;
+   141	  //restore the original value of the input 
+   142	  input = saveInput;
+   143	   
+   144	  //calculation for the first digit
+   145	  firstDigit = (input / (long long int)pow(10, multiplier1));
+   146	  
+   147	  //rotates the input
+   148	  if (multiplier1 == multiplier2)
+   149	  {
+   150	    rotInt = (input % (long long int)pow(10, multiplier1)) * 10  + (input / (long long int)pow(10, multiplier1));
+   151	  }
+   152	  else 
+   153	  {
+   154	    rotInt = input * 10;
+   155	  }
+   156	  
+   157	  return rotInt;
+   158	} //rotater
+   159	
+   160	/******************************************************************************
+   161	* Function:    valRegister
+   162	* Description: stores the minimum and maximum values for each iteration in a register and updates it whenever there is a smaller or larger value
+   163	* Parameters:  input, long long int, the original input value
+   164	*              rotInt, long long int, the newest rotated value
+   165	*              *minReg, long long int, the minimum number register
+   166	*              *maxReg, long long int, the maximum number register
+   167	* Return:      void
+   168	******************************************************************************/
+   169	void valRegister(long long int input, long long int rotInt, long long int *minReg, long long int *maxReg)
+   170	{
+   171	  if (rotInt < input)
+   172	  {
+   173	    if (rotInt < *maxReg)
+   174	    {
+   175	      *maxReg = rotInt;
+   176	    }
+   177	  }
+   178	  else if (rotInt > input) 
+   179	  {
+   180	    if (rotInt > *minReg)
+   181	    {
+   182	      *minReg = rotInt;
+   183	    }
+   184	  }
+   185	  else 
+   186	  {
+   187	    //null (remains unchanged) 
+   188	  }
+   189	  return;
+   190	} //valRegister
+   191	
+   192	/******************************************************************************
+   193	* Function:    output
+   194	* Description: prints out the final outputs of the program
+   195	* Parameters:  minReg, long long int, the finalized minimum register
+   196	*              maxReg, long long int, the finalized maximum register
+   197	* Return:      void
+   198	******************************************************************************/
+   199	void output(long long int minReg, long long int maxReg)
+   200	{
+   201	  printf("\nLargest value generated: %lld\n", minReg);
+   202	  printf("Smallest value generated: %lld\n", maxReg);
+   203	  return;
+   204	} //output

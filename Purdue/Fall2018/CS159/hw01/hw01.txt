@@ -1,0 +1,64 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: hw01.c
+Submission: 2018-08-31 14:46
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	
+     2	/******************************************************************************
+     3	* Assignment:  hw01
+     4	* Lab Section: 11:30, Tuesday, SC 189
+     5	* Description: This program calculates the eccentricity, surface area, volume,
+     6	* and the surface to volume ratio from the enter value of equatorial and polar radius.
+     7	* This is the demonstration of a raindrop deformed primarily by the drag force and
+     8	* taking the shape of an oblate spheroid.
+     9	* Programmers: Tomoki Koike koike@purdue.edu
+    10	*              
+    11	*              
+    12	******************************************************************************/
+    13	
+    14	#include <stdio.h>
+    15	#include <math.h>
+    16	#define PI 3.141592 //M_PI di not work on my program it would give me an error whenever I compiled the program 
+    17	
+    18	int main (void)
+    19	{
+    20	  //local Declarations 
+    21	  double eqRadius;          //the equatorial radius of the oblate spheroid
+    22	  double polRadius;         //the polar radius of the oblate spheroid 
+    23	  double eccnt;             //the eccentricity of the oblate spheroid
+    24	  double eccntPercent;      //the eccentricity in percentage of the oblate spheroid 
+    25	  double area;              //the surface area of the oblate spheroid 
+    26	  double vol;               //the volume of the oblate spheroid 
+    27	  double area_to_vol;       //the surface area to volume ratio of the oblate spheroid
+    28	
+    29	  //Statements
+    30	  printf("\nEnter equatorial radius (mm) ->  ");
+    31	  scanf("%lf", &eqRadius);
+    32	  printf("Enter polar radius (mm) -> "); 
+    33	  scanf("%lf", &polRadius);
+    34	
+    35	  eccnt = sqrt(1 - polRadius * polRadius  / eqRadius /  eqRadius);                                               //the calculation for the eccentricity
+    36	  eccntPercent = eccnt * 100;                                                                                    //the calculation to convert eccentricity into percentage
+    37	  area = 2 * PI  * eqRadius * eqRadius  + PI * polRadius * polRadius  / eccnt * log((1 + eccnt) / (1 - eccnt));  //the calculation for the surface area
+    38	  vol  = 4 * PI * eqRadius * eqRadius * polRadius / 3;                                                           //the calculation for the volume 
+    39	  area_to_vol  = area / vol;                                                                                     //the calculation for the surface area to volume ratio
+    40	
+    41	  printf("\nEccentricity: %1.2lf%%", eccntPercent);
+    42	  printf("\nSurface area: %.3lf mm^2 ", area);
+    43	  printf("\nVolume: %.3lf mm^3 ", vol);
+    44	  printf("\nSurface-to-Volume ratio: %.3lf\n", area_to_vol);
+    45	
+    46	  return 0; 
+    47	
+    48	}  //main
+    49	

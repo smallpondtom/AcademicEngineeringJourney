@@ -1,0 +1,34 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: lab00.c
+Submission: 2018-08-21 12:10
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  Lab 00
+     3	* 
+     4	* Lab Section: 8/21/2018, 11:30PM,Stanley Coulter Hall 189
+     5	* Description:You need to replace your career account userid fo              r login1 and your TAs career account userid for l              ogin2. After you submit the program, make sure yo              u and your TA recieve a confirmation e-mail.
+     6	* Programmers: koike@purdue.edu
+     7	*              dandree@purdue.edu
+     8	******************************************************************************/
+     9	#include <stdio.h>
+    10	
+    11	int main(void)
+    12	{
+    13	  // local declarations
+    14	
+    15	  // executable statements
+    16	  printf("Welcome to CS 158/159!\n");
+    17	
+    18	  return 0;
+    19	}

@@ -1,0 +1,399 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: lab08.c
+Submission: 2018-10-26 15:05
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  Lab 08 
+     3	* Lab Section: Tuesday, 11:30, Stanley Coulter Hall
+     4	* Description: This program is the code for a processor that conducts limit number of algebraic with a function to store the values in multiple registers using binary instruction codes that the user inputs into the program. This program can have an infinite number of inputs but terminates automatically with specific instruction codes and also assists the user to enter proper codes.
+     5	* Programmers: Tomoki Koike koike@purdue.edu
+     6	*              Lauren Anderson ander867@purdue.edu
+     7	*              Luke Murphy murph282@purdue.edu
+     8	******************************************************************************/
+     9	
+    10	#include <stdio.h>
+    11	#include <math.h>
+    12	
+    13	long long int input(int);
+    14	int invalidDigit(long long int, int);
+    15	long long int biToDec(long long int);
+    16	int calValue1(long long int);
+    17	int calValue2(long long int);
+    18	int extractBinaryValue2(long long int);
+    19	int process(long long int, int, int, int, int *reg1, int *reg2, int *reg3, int *reg4);
+    20	void output(int, int, int, int);
+    21	
+    22	int main(void)
+    23	{
+    24	  long long int code;   //the instruction code inputted by the user 
+    25	  int value1;           //the value1 from the instruction code tha tis the middle 4 digits of binary number converted into decimals
+    26	  int value2;           //the value2 from the instruction code that is the last 4 digits of binary number converted into decimals
+    27	  int binaryValue2;     //the binary number form of value2
+    28	  int reg1;             //the value for register 1
+    29	  int reg2;             //the value for register 2
+    30	  int reg3;             //the value for register 3
+    31	  int reg4;             //the value for register 4 
+    32	  int index;            //the index or "counter" for the loop in the main   
+    33	
+    34	  // initializing the four registers
+    35	  reg1 = 0;   
+    36	  reg2 = 0;
+    37	  reg3 = 0;
+    38	  reg4 = 0;
+    39	  
+    40	  // initialization
+    41	  index = 1;
+    42	  
+    43	  do 
+    44	  {
+    45	    //user input
+    46	    code = input(index);
+    47	    index++;
+    48	    
+    49	    // figuring out the values for the first instruction code
+    50	    value1 = calValue1(code); 
+    51	    value2 = calValue2(code);
+    52	    
+    53	    // taking out the last 4 digit of the instruction code 
+    54	    binaryValue2 = extractBinaryValue2(code);
+    55	        
+    56	    // conducting the computations regarding the first 4 digits of the instruction code
+    57	    if (code != -1)
+    58	    {
+    59	      value1 = process(code, value1, value2, binaryValue2, &reg1, &reg2, &reg3, &reg4);
+    60	    }
+    61	  } while(code != -1);
+    62	
+    63	  // printing out the results
+    64	  output(reg1, reg2, reg3, reg4);
+    65	
+    66	  return 0;
+    67	} //main
+    68	
+    69	/******************************************************************************
+    70	* Function:    input
+    71	* Description: Allows the user to input the instruction code.
+    72	* Parameters:  none
+    73	* Return:      long long int, the first instruction code which is a binary code
+    74	******************************************************************************/
+    75	long long int input(int index)
+    76	{
+    77	  long long int code;  //the inputted  first instruction code
+    78	  int last4digits;     //the last four digits of the instruction code
+    79	  int first4digits;    //the first four digits of the instruction code
+    80	  int factor = 99;     //the factor which determines whether this functions loop continues or not   
+    81	
+    82	  do 
+    83	  {
+    84	    // user input 
+    85	    printf("Enter full instruction code #%d -> ",index);
+    86	    scanf("%lld",&code);
+    87	    
+    88	    // extracting the first and last digits of the instruction code for the following computations
+    89	    last4digits = (code + 1000) % 10000; 
+    90	    first4digits = (code + 100000000000) / 100000000;
+    91	   
+    92	    // calling fuction for input validation
+    93	    factor = invalidDigit(code, index);
+    94	    
+    95	    if (factor == 99)
+    96	    {
+    97	      if (first4digits == 2000 || first4digits == 2001 || first4digits == 2010 || first4digits == 2011 || first4digits == 2100 || first4digits == 2222)
+    98	      {
+    99	        if (last4digits == 2000 || last4digits == 1100 || last4digits == 1010 || last4digits == 1001)
+   100	        {
+   101	          //null
+   102	        }
+   103	        else
+   104	        {
+   105	          printf("\nInvalid register! Terminating input.\n");
+   106	          code = -1;
+   107	        }
+   108	      }   
+   109	    }
+   110	  } while(factor != 99);
+   111	       
+   112	  return code;
+   113	} //input
+   114	
+   115	/******************************************************************************
+   116	* Function:    invalidDigit 
+   117	* Description: this function will find the invalid numbers inside the user given instruction code and print out a error messgage and to make them provide a proper instruction code again 
+   118	* Parameters:  code, long long int, the 12 digit instruction code
+   119	*              index, int, the index for the loop in the main which determines the entered number of instruction codes 
+   120	* Return:      int, the factor which determines to repeat the entering of the same # instruction code 
+   121	******************************************************************************/
+   122	int  invalidDigit(long long int code, int index)
+   123	{
+   124	  long long int newCode; //the changed value of the code
+   125	  int num = 0;           //the counter as well as the detector for an invalid digit in the instruction code
+   126	  int counter = 0;       //counter to optimize the code value for the loop in the first addition operation
+   127	  int factor = 99;       //the factor corresponding with the variable "factor"  in the function input 
+   128	
+   129	  while (code != 0) 
+   130	  {
+   131	    // the procedure below looks at each digit of the code from the smaller ones and finds out if it is other than 0 or 1 
+   132	    newCode = code + 111111111111 * pow(10, counter--);
+   133	    num = newCode % 10 - 1;
+   134	
+   135	    if (num > 1)
+   136	    {
+   137	      printf("Instruction #%d contains an invalid digit, please try again.\n" , index);
+   138	      code = 0;
+   139	      factor++;
+   140	    }
+   141	    
+   142	    //divides code by 10 to do the same procedure on the next digit
+   143	    code /= 10;
+   144	  }
+   145	  return factor;
+   146	} //invalidDigit
+   147	
+   148	/******************************************************************************
+   149	* Function:    calValue1
+   150	* Description: Calculates the decimal value that corresponds with the first four digits of the binary instruction code
+   151	* Parameters:  code, long long int, the instruction code inputted by the user
+   152	* Return:      int, the decimal value calculated by the function
+   153	******************************************************************************/
+   154	int calValue1(long long int code)
+   155	{
+   156	  int value1;  //value1 that is extracted from instruction code and converted to decimals
+   157	
+   158	  code = (code % 100000000) / 10000;
+   159	
+   160	  value1 = biToDec(code);
+   161	  return value1;
+   162	} //calValue1
+   163	
+   164	/******************************************************************************
+   165	* Function:    calValue2
+   166	* Description: Calculates the decimal value that corresponds with from the fifth to eighth digits of the binary instruction code
+   167	* Parameters:  code, long long int, the instruction code inputted by the user
+   168	* Return:      int, the decimal value calculated by the function
+   169	******************************************************************************/
+   170	int calValue2(long long int code)
+   171	{
+   172	  int value2; //value2 that is extracted from the instruction code and then converted to decimals
+   173	
+   174	  code = code % 10000;
+   175	
+   176	  value2 = biToDec(code);
+   177	  return value2;
+   178	} //calValue2
+   179	
+   180	/******************************************************************************
+   181	* Function:    biToDec
+   182	* Description: Converts the binary code to a decimal number
+   183	* Parameters:  biNum, long long int, the binary code that will be converted to a decimal number
+   184	* Return:      long long int, the decimal number that was converted from the given binary code
+   185	******************************************************************************/
+   186	long long int biToDec(long long int biNum)
+   187	{
+   188	  long long int decNum; //the decimal number converted by from the binary code
+   189	
+   190	  decNum = (biNum / 1000 * pow(2,3)) + ((biNum % 1000) / 100 * pow(2,2)) + ((biNum % 100) / 10 * 2) + (biNum % 10);
+   191	  return decNum;
+   192	} //biToDec
+   193	
+   194	/******************************************************************************
+   195	* Function:    extractBinaryValue2
+   196	* Description: taking out the last 4 digits of the instruction code that corresponds with value2
+   197	* Parameters:  long long int, code, the given instruction code
+   198	* Return:      int, the 4 digit binary code for the last 4 digits of the instruction code
+   199	******************************************************************************/
+   200	int extractBinaryValue2(long long int code)
+   201	{
+   202	  int binaryValue2; //the binary value of 2
+   203	
+   204	  binaryValue2 = (code + 1000) % 10000;
+   205	  return binaryValue2;
+   206	} //extractBinaryValue2
+   207	
+   208	/******************************************************************************
+   209	* Function:    process
+   210	* Description: does all the computation regarding the instruction codes including the algebraic computations and the assigning of registers and the the calculations of the values of the registers
+   211	* Parameters:  long long int, code, the instruction code
+   212	*              int, value1, the decimal form of the middle 4 digits of the instruction code
+   213	*              int, value2, the decimal form of the last 4 digits of the instruction code
+   214	*              int, binaryValue2, the binary form of value2
+   215	*              int, *reg1, the value of register 1 (passed by address)
+   216	*              int, *reg2, the value of register 2 (passed by address)
+   217	*              int, *reg3, the value of register 3 (passed by address)
+   218	*              int, *reg4, the value of register 4 (passed by address)
+   219	* Return:      int, the result of the algebraic computation
+   220	******************************************************************************/
+   221	int process(long long int code, int value1, int value2, int binaryValue2, int *reg1, int *reg2, int *reg3, int *reg4)
+   222	{
+   223	  int newValue; //the resulting value of the algebraic computation 
+   224	    
+   225	  code = (code + 111100000000) / 100000000;
+   226	  
+   227	  if (code == 1111 || code == 1211)
+   228	  {
+   229	    newValue = value1 + value2;
+   230	    *reg4 = newValue;
+   231	  }
+   232	  else if (code == 1112)
+   233	  {
+   234	    newValue = value1 - value2;
+   235	    *reg4 = newValue;
+   236	  }
+   237	  else if (code == 1212)
+   238	  {
+   239	    newValue = value2 - value1;
+   240	    *reg4 = newValue;
+   241	  }
+   242	  else if (code == 1121 || code == 1221)
+   243	  {
+   244	    newValue = value1 * value2;
+   245	    *reg4 = newValue;
+   246	  }
+   247	  else if (code == 1122)
+   248	  {
+   249	    newValue = value1 / value2;
+   250	    *reg4 = newValue;
+   251	  }
+   252	  else if (code == 1222) 
+   253	  {
+   254	    newValue = value2 / value1;
+   255	    *reg4 = newValue;
+   256	  }
+   257	  else if (code == 2212)
+   258	  {
+   259	    newValue = value1 % value2;
+   260	    *reg4 = newValue;
+   261	  }
+   262	  else if (code == 2221)
+   263	  {
+   264	    newValue = value2 % value1;
+   265	    *reg4 = newValue;
+   266	  } 
+   267	  else if (code == 2111 && binaryValue2 == 2000)
+   268	  { 
+   269	    *reg1 = value1;
+   270	  }
+   271	  else if (code == 2111 && binaryValue2 == 1100)
+   272	  {
+   273	    *reg2 = value1;
+   274	  }
+   275	  else if (code == 2111 && binaryValue2 == 1010)
+   276	  {
+   277	    *reg3 = value1;
+   278	  }
+   279	  else if (code == 2111 && binaryValue2 == 1001)
+   280	  {
+   281	    *reg4 = value1;
+   282	  }
+   283	  else if (code == 2112 && binaryValue2 == 2000)
+   284	  {
+   285	    *reg1 += value1;
+   286	  }
+   287	  else if (code == 2112 && binaryValue2 == 1100)
+   288	  {
+   289	    *reg2 += value1;
+   290	  }
+   291	  else if (code == 2112 && binaryValue2 == 1010)
+   292	  {
+   293	    *reg3 += value1;
+   294	  }
+   295	  else if (code == 2112 && binaryValue2 == 1001)
+   296	  {
+   297	    *reg4 += value1;
+   298	  }
+   299	  else if (code == 2121 && binaryValue2 == 2000)
+   300	  {
+   301	    *reg1 -= value1;
+   302	  }
+   303	  else if (code == 2121 && binaryValue2 == 1100)
+   304	  {
+   305	    *reg2 -= value1;
+   306	  }
+   307	  else if (code == 2121 && binaryValue2 == 1010)
+   308	  {
+   309	    *reg3 -= value1;
+   310	  }
+   311	  else if (code == 2121 && binaryValue2 == 1001) 
+   312	  {
+   313	    *reg4 -= value1;
+   314	  }
+   315	  else if (code == 2122 && binaryValue2 == 2000)
+   316	  {
+   317	    *reg1 *= value1;
+   318	  }
+   319	  else if (code == 2122 && binaryValue2 == 1100)
+   320	  {
+   321	    *reg2 *= value1;
+   322	  }
+   323	  else if (code == 2122 && binaryValue2 == 1010)
+   324	  {
+   325	    *reg3 *= value1;
+   326	  }
+   327	  else if (code == 2122 && binaryValue2 == 1001)
+   328	  {
+   329	    *reg4 *= value1;
+   330	  }
+   331	  else if (code == 2211 && binaryValue2 == 2000)
+   332	  {
+   333	    *reg1 /= value1;
+   334	  }
+   335	  else if (code == 2211 && binaryValue2 == 1100)
+   336	  {
+   337	    *reg2 /= value1;
+   338	  }
+   339	  else if (code == 2211 && binaryValue2 == 1010)
+   340	  {
+   341	    *reg3 /= value1;
+   342	  }
+   343	  else if (code == 2211 && binaryValue2 == 1001)
+   344	  {
+   345	    *reg4 /= value1;
+   346	  }
+   347	  else if (code == 2222 && binaryValue2 == 2000)
+   348	  {
+   349	    *reg1 %= value1;
+   350	  }
+   351	  else if (code == 2222 && binaryValue2 == 1100)
+   352	  {
+   353	    *reg2 %= value1;
+   354	  }
+   355	  else if (code == 2222 && binaryValue2 == 1010)
+   356	  {
+   357	    *reg3 %= value1;
+   358	  }
+   359	  else if (code == 2222 && binaryValue2 == 1001) 
+   360	  {
+   361	    *reg4 %= value1;
+   362	  }
+   363	  else 
+   364	  {
+   365	    //null
+   366	  }
+   367	  
+   368	  return newValue;     
+   369	} //process
+   370	
+   371	/******************************************************************************
+   372	* Function:    output
+   373	* Description: printing out the final results for the values of all registers
+   374	* Parameters:  int, reg1, the value of register 1
+   375	*              int, reg2, the value of register 2
+   376	*              int, reg3, the value of register 3
+   377	*              int, reg4, the value of register 4
+   378	* Return:      void
+   379	******************************************************************************/
+   380	void output(int reg1, int reg2, int reg3, int reg4)
+   381	{
+   382	  printf("\nRegister Values: %d %d %d %d\n", reg1, reg2, reg3, reg4);
+   383	  return;
+   384	} //output

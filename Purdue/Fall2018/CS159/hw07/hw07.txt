@@ -1,0 +1,275 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: hw07.c
+Submission: 2018-11-29 13:36
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  hw07
+     3	* Lab Section: Tuesday,11:30, SC Hall
+     4	* Description: This programs is designed to accept two user input arrays and find out the unique values within the dataset and also the unique values across both set of data. The program outputs those values as arrays individually.
+     5	* Programmers: Tomoki Koike, koike@purdue.edu
+     6	********************************************************************************/
+     7	#include <stdio.h>
+     8	#include <math.h>
+     9	#define SIZE 30
+    10	
+    11	// funcion delclarations
+    12	int inputData1(int[]);
+    13	int inputData2(int[]);
+    14	void combine(int [], int[], int [], int, int);
+    15	void sort(int [], int);
+    16	void uniqueData(int [], int);
+    17	void output(int[], int[], int[], int, int);
+    18	
+    19	int main(void)
+    20	{
+    21	  // local declarations
+    22	  int enterArray1[SIZE] = {0}; // user input array 1
+    23	  int enterArray2[SIZE] = {0}; // user input array 2
+    24	  int combinedArray[SIZE * 2] = {0}; // the combined array 
+    25	  int len1; // length of the first array
+    26	  int len2; // length of the second array 
+    27	
+    28	  // statements
+    29	  // Accept user input
+    30	  len1 = inputData1(enterArray1);
+    31	  len2 = inputData2(enterArray2);
+    32	  // combine the two arrays
+    33	  combine(enterArray1, enterArray2, combinedArray, len1, len2);
+    34	  // conduct sorting of the array 
+    35	  sort(enterArray1, len1);
+    36	  sort(enterArray2, len2);
+    37	  sort(combinedArray, (len1 + len2));
+    38	  // find out the unique data in the three arrays
+    39	  uniqueData(enterArray1, len1);
+    40	  uniqueData(enterArray2, len2);
+    41	  uniqueData(combinedArray, (len1 + len2));
+    42	  // print out the final outputs
+    43	  printf("\n");
+    44	  output(combinedArray, enterArray1, enterArray2, len1, len2);
+    45	
+    46	  return 0; 
+    47	} // main
+    48	
+    49	/******************************************************************************
+    50	* Function:    inputData1
+    51	* Description: Accepts the first data set of the user input array
+    52	* Parameter:   array[], int, the predefined array
+    53	* Return:      int, the length of the user input array
+    54	 ******************************************************************************/
+    55	int inputData1(int array[])
+    56	{
+    57	  int i = 0;       // counter
+    58	  int element = 1; // user input
+    59	
+    60	  printf("Enter data set #1 -> ");
+    61	  while (i < SIZE && element != EOF)
+    62	  {
+    63	    scanf("%d", &array[i]);
+    64	    element = array[i];
+    65	    i++;
+    66	  }
+    67	  if (array[SIZE-1] != -1)
+    68	  {
+    69	    i++;
+    70	  }
+    71	
+    72	  return --i;
+    73	} // inputData1
+    74	
+    75	/******************************************************************************
+    76	* Function:    inputData2
+    77	* Description: Accepts the first data set of the user input array
+    78	* Parameter:   array[], int, the predefined array
+    79	* Return:      int, the length of the user input array
+    80	******************************************************************************/
+    81	int inputData2(int array[])
+    82	{
+    83	  int i = 0;       // counter
+    84	  int element = 1; // user input
+    85	
+    86	  printf("Enter data set #2 -> ");
+    87	  while (i < SIZE && element != EOF)
+    88	  {
+    89	    scanf("%d", &array[i]);
+    90	    element = array[i];
+    91	    i++;
+    92	  }
+    93	  if (array[SIZE - 1] != -1)
+    94	  {
+    95	    i++;
+    96	  }
+    97	  return --i;
+    98	
+    99	} // inputData2
+   100	
+   101	/******************************************************************************
+   102	* Function:    combine
+   103	* Description: Combines the two data sets into one array
+   104	* Parameters:  array1[], int, the first data set
+   105	*              array2[], int, the second data set
+   106	*              combinedArray[], int, the combined array predefined
+   107	*              len1, int, the length of the first data set
+   108	*              len2, int, the length of the second data set 
+   109	* Return:      void
+   110	******************************************************************************/
+   111	void combine(int array1[], int array2[], int combinedArray[], int len1, int len2)
+   112	{
+   113	  int i; // counter
+   114	  int n; // counter
+   115	
+   116	  for (i = 0; i < len1; i++)
+   117	  {
+   118	    combinedArray[i] = array1[i];
+   119	  }
+   120	  for (n = 0; n < len2; n++)
+   121	  {
+   122	    combinedArray[len1 + n] = array2[n];
+   123	  }
+   124	
+   125	  return;
+   126	} // combine
+   127	
+   128	/******************************************************************************
+   129	* Function:    sort
+   130	* Description: Operates insertion sort
+   131	* Parameters:  array[], int, one of the arrays
+   132	*              len, int, the length of the array
+   133	* Return:      void
+   134	******************************************************************************/
+   135	void sort(int array[], int len)
+   136	{
+   137	  int i; // counter
+   138	  int j; // counter
+   139	  int temp; // temporary value to be sorted
+   140	
+   141	  for (i = 1; i < len; i++)
+   142	  {
+   143	    temp = array[i];
+   144	    j = i - 1;
+   145	    while (temp < array[j] && j >= 0)
+   146	    {
+   147	      array[j + 1] = array[j];
+   148	      j--;
+   149	    }
+   150	    array[j + 1] = temp;
+   151	  }
+   152	
+   153	  return;
+   154	}
+   155	
+   156	/******************************************************************************
+   157	* Function:    uniqueData
+   158	* Description: manipulates the array to show the unique data in the set
+   159	* Parameters:  array[], int, one of the arrays
+   160	*              len, int, the lenght of the array
+   161	* Return:      void
+   162	******************************************************************************/
+   163	void uniqueData(int array[], int len)
+   164	{
+   165	  int i = 0; // counter
+   166	  int ct = 0; // counter
+   167	
+   168	  while (i < (len - 1))
+   169	  {
+   170	    if (array[i] == array[i + 1])
+   171	    {
+   172	      ct = i;
+   173	      while (array[ct] == array[ct + 1])
+   174	      {
+   175	        array[ct] = 0;
+   176	        ct++;
+   177	      } 
+   178	      array[ct] = 0;
+   179	      i = ct + 1;
+   180	    }
+   181	    else
+   182	    {
+   183	      i++;
+   184	    }
+   185	  }
+   186	
+   187	  return;
+   188	} // uniqueData
+   189	
+   190	/******************************************************************************
+   191	* Function:    output
+   192	* Description: Prints out the final outputs
+   193	* Parameters:  uniqArray[], int, the array including the values of the uncommonly unique elements
+   194	*              holdFreq1[], int, the held frequency count array of data set one
+   195	*              holdFreq2[], int, the held frequency count array of data set two
+   196	*              len1, int, the length of the first data set
+   197	*              len2, int, the length of the second data set
+   198	* Return:      void
+   199	******************************************************************************/
+   200	void output(int uniqArray[], int array1[], int array2[], int len1, int len2)
+   201	{
+   202	  int i;    // counter
+   203	  int n;     // counter
+   204	  int ct;    // counter
+   205	  int p = 0;  // counter
+   206	  int q = 0; // counter
+   207	  int r = 0; // counter
+   208	
+   209	  printf("Unique data within set #1: ");
+   210	  for (i = 0; i < len1; i++)
+   211	  {
+   212	    if (array1[i] > 0)
+   213	    {
+   214	      printf("%d ", array1[i]);
+   215	    }
+   216	    else
+   217	    {
+   218	      p++;
+   219	    }
+   220	  }
+   221	  if (p >= len1)
+   222	  {
+   223	    printf("None.");
+   224	  }
+   225	  printf("\nUnique data within set #2: ");
+   226	  for (n = 0; n < len2; n++)
+   227	  {
+   228	    if (array2[n] > 0)
+   229	    {
+   230	      printf("%d ", array2[n]);
+   231	    }
+   232	    else
+   233	    {
+   234	      q++;
+   235	    }
+   236	  }
+   237	  if (q >= len2)
+   238	  {
+   239	    printf("None.");
+   240	  }
+   241	  printf("\nData found only once across both sets: ");
+   242	  for (ct = 0; ct < len1 + len2; ct++)
+   243	  {
+   244	    if (uniqArray[ct] > 0)
+   245	    {
+   246	      printf("%d ", uniqArray[ct]);
+   247	    }
+   248	    else
+   249	    {
+   250	      r++;
+   251	    }
+   252	  }
+   253	  if (r >= len1 + len2)
+   254	  {
+   255	    printf("None.");
+   256	  }
+   257	  printf("\n");
+   258	
+   259	  return;
+   260	} // output

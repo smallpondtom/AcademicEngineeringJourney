@@ -1,0 +1,183 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: hw03.c
+Submission: 2018-09-23 14:19
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	
+     2	/******************************************************************************
+     3	* Assignment:  HW03
+     4	* Lab Section: Tuesday, 11:30, SC Hall
+     5	* Description: This program calculates the length and the period of a pendulum made by different materials: brass, steel, or aluminum. The lengths to periods will be calculated for when the rods change its length due to linear expansion.
+     6	* Programmers: Tomoki Koike  koike@purdue.edu
+     7	*              
+     8	******************************************************************************/
+     9	
+    10	#include <stdio.h>
+    11	#include <math.h>
+    12	#include <stdlib.h>
+    13	
+    14	//Function Declarations 
+    15	double input_length(void);
+    16	double input_tempI(void);
+    17	double input_tempF(void);
+    18	double periodCal(double length);
+    19	double linExp(double lengthRod, double coeff, double tempI, double tempF);
+    20	double output(double length, double period);
+    21	
+    22	int main()
+    23	{
+    24	  //Local Declarations 
+    25	  double lengthI;     // The initial length of the rod 
+    26	  double tempI;       // The initial temperature
+    27	  double tempF;       // The final temperature
+    28	  double orgnPeriod;  // The original period calculated from the initial state
+    29	  double lengthBrass; // The length of brass rod at final temperature 
+    30	  double lengthSteel; // The length of steel rod at final temperature
+    31	  double lengthAl;    // The length of aluminum rod at final temperature 
+    32	  double coeffBrass = 19.0 * pow(10, -6);  // The average coefficient of linear expansion of brass
+    33	  double coeffSteel = 11.0 * pow(10, -6);  // The average coefficient of linear expansion of steel
+    34	  double coeffAl = 24.0 * pow(10, -6);     // The average coefficient of linear expansion of aluminum
+    35	  double periodBrass; // The new period for the brass pendulum
+    36	  double periodSteel; // The new period for the steel pendulum
+    37	  double periodAl;    // The new period for the aluminum pendulum
+    38	  
+    39	  // receive the user's entered values: length, initial and final temperature 
+    40	  lengthI = input_length();
+    41	  tempI = input_tempI();
+    42	  tempF = input_tempF();
+    43	  
+    44	  // calculate the period from original length and temperature
+    45	  orgnPeriod = periodCal(lengthI);
+    46	
+    47	  // Statements
+    48	  // printing the entered data and the calculated period from those data
+    49	  printf("\nOriginal length: %.2lf m\n", lengthI);
+    50	  printf("Original period: %.2lf s\n", orgnPeriod);
+    51	  printf("Original temperature: %.2lf C\n", tempI);
+    52	  printf("Ending temperature: %.2lf C\n", tempF); 
+    53	  
+    54	  // calculating the new length of rod due to linear expansion
+    55	  // new length of brass
+    56	  lengthBrass = linExp(lengthI, coeffBrass, tempI, tempF);
+    57	  // new length of steel
+    58	  lengthSteel = linExp(lengthI, coeffSteel, tempI, tempF);
+    59	  // new length of aluminum
+    60	  lengthAl = linExp(lengthI, coeffAl, tempI, tempF);
+    61	
+    62	  // calculating the new  periods for each material 
+    63	  // new period for brass
+    64	  periodBrass = periodCal(lengthBrass);
+    65	  // new period for steel 
+    66	  periodSteel = periodCal(lengthSteel);
+    67	  // new period for aluminum
+    68	  periodAl = periodCal(lengthAl);
+    69	  
+    70	  // Printing the results from the calculations
+    71	  // Brass
+    72	  printf("\nBrass rod new length: %.4lf m\n", lengthBrass);
+    73	  printf("Brass rod new period: %.4lf s\n", periodBrass);
+    74	  // Steel
+    75	  printf("\nSteel rod new length: %.4lf m\n", lengthSteel);
+    76	  printf("Steel rod new period: %.4lf s\n", periodSteel);
+    77	  // Aluminum
+    78	  printf("\nAluminum rod new length: %.4lf m\n", lengthAl);
+    79	  printf("Aluminum rod new length: %.4lf s\n", periodAl);
+    80	
+    81	  return 0;
+    82	}
+    83	
+    84	/******************************************************************************
+    85	* Function:    input_length
+    86	* Description: Receives a number to calculate from the user
+    87	* Parameters:  none 
+    88	* Return:      double containing the user's entered number for the length
+    89	******************************************************************************/
+    90	double input_length(void)
+    91	{
+    92	  double lengthI;  // The initial length of the rod entered
+    93	    
+    94	  // Prompt the user and receive the user's response 
+    95	  printf("Enter starting length of pendulum (m) -> ");
+    96	  scanf("%lf", &lengthI);
+    97	  
+    98	  return lengthI;
+    99	}
+   100	
+   101	/******************************************************************************
+   102	* Function:    input_tempI
+   103	* Description: Receives a number to calculate from the user
+   104	* Parameters:  none
+   105	* Return:      double containing the user's entered number for the initial temperature
+   106	******************************************************************************/
+   107	double input_tempI(void)
+   108	{
+   109	  double tempI;  // The initial temperature entered
+   110	
+   111	  // Prompt the user and receive the user's response
+   112	  printf("Enter the starting temperature (C) -> ");
+   113	  scanf("%lf", &tempI);
+   114	  
+   115	  return tempI;
+   116	}
+   117	
+   118	/******************************************************************************
+   119	* Function:    input_tempF
+   120	* Description: Receives a number to calculate from the user
+   121	* Parameters:  none
+   122	* Return:      double containing the user's entered number for the final temperature
+   123	*******************************************************************************/
+   124	double input_tempF(void)
+   125	{
+   126	  double tempF; // The final temperature
+   127	
+   128	  // Prompt the user and receive the user's response
+   129	  printf("Enter the ending temperature (C) -> ");
+   130	  scanf("%lf", &tempF);
+   131	  
+   132	  return tempF;
+   133	}
+   134	
+   135	/******************************************************************************
+   136	* Function:    periodCal
+   137	* Description: calculates the period with any given length of pendulum
+   138	* Parameters:  length - the given length of the pendulum
+   139	* Return:      period containing the calculated period 
+   140	******************************************************************************/
+   141	double periodCal(double length)
+   142	{
+   143	  double period; // the period calculated from the length of pendulum
+   144	
+   145	  // calculation of the period 
+   146	  period = 2 * M_PI * sqrt(length / 9.8);
+   147	
+   148	  return period;
+   149	}
+   150	
+   151	/******************************************************************************
+   152	* Function:    linExp
+   153	* Description: Calculates the new length of the pendulum with any material using the initial and final temperatures and average coefficient of linear expansion.
+   154	* Parameters:  lengthRod, double, the length of the pendulum
+   155	*              coeff, double, the given average coefficient of linear expansion
+   156	*              tempI, double, the given initial temperature 
+   157	*              tempF, double, the given final temperature
+   158	* Return:      data type and description
+   159	******************************************************************************/
+   160	double linExp(double lengthRod, double coeff, double tempI, double tempF)
+   161	{
+   162	  double newLength;  // the calculated new length of pendulum
+   163	  
+   164	  // calculation
+   165	  newLength = lengthRod + lengthRod * coeff * (tempF - tempI);
+   166	
+   167	  return newLength;
+   168	}

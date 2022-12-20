@@ -1,0 +1,215 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: lab09.c
+Submission: 2018-11-06 08:53
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  lab09 
+     3	* Lab Section: Tuesday, 11:30 SC hall
+     4	* Description: This program is able to tell the number of digits that is entered by the user for a number entered by the user as well as figure out the number of combos able to create with the order of the digits of the number
+     5	* Programmers: Tomoki Koike koike@purdue.edu
+     6	*              Daniel Cinal dcinal@purdue.edu
+     7	*              Madison Green  green326@purdue.edu
+     8	******************************************************************************/
+     9	#include <stdio.h>
+    10	#include <math.h>
+    11	
+    12	long long int inputValue(void);
+    13	int inputDigit(void);
+    14	void output(int, int, int, int);
+    15	int comboCounter(long long int, int, int, int, int, int);
+    16	
+    17	int main(void)
+    18	{
+    19	  // local Declarations 
+    20	  long long int input;       // variable that holds the user inputted integer 
+    21	  int digit1;                // variable that holds the user inputted value for digit 1
+    22	  int digit2;                // variable that holds the user inputted value for digit 2 
+    23	  int digit3;                // variable that holds the user inputted value for digit 3 
+    24	  int digitCount1;           // variable that counts number of times digit 1 is in integer 
+    25	  int digitCount2;           // variable that counts number of times digit 2 is in integer 
+    26	  int digitCount3;           // variable that counts number of times digit 3 is in integer 
+    27	  int comboCount;            // variable that counts number of possible arrangements of the integers 
+    28	
+    29	  // Statements
+    30	  input = inputValue();             // the uset inputs the integer 
+    31	  digit1 = inputDigit();            // the user input of the digits to find in the given value  
+    32	  digit2 = inputDigit();
+    33	  digit3 = inputDigit();
+    34	
+    35	  printf("enter digit count 1: ");
+    36	  scanf("%d", &digitCount1);
+    37	  printf("enter digit count 2: ");
+    38	  scanf("%d", &digitCount2);
+    39	  printf("enter digit count 3: ");
+    40	  scanf("%d", &digitCount3);
+    41	  
+    42	  //generate the number of combos
+    43	  comboCount = comboCounter(input, digit1, digit2, digit3, digitCount2, digitCount3);
+    44	
+    45	  //output
+    46	  output(digitCount1, digitCount2, digitCount3, comboCount);
+    47	  return 0;
+    48	} //main
+    49	
+    50	/******************************************************************************
+    51	* Function:    inputValue  
+    52	* Description: Accepts the use input of the integer value
+    53	* Parameters:  void
+    54	* Return:      long long int, inputValue, the user inputted integer 
+    55	******************************************************************************/ 
+    56	long long int inputValue(void)
+    57	{
+    58	  long long int input;                    //the user input 
+    59	  
+    60	  do
+    61	  {
+    62	    printf("Enter integer value -> ");
+    63	    scanf("%lld", &input);
+    64	  
+    65	    if (input < 0)
+    66	    {
+    67	      printf("\nError! Non_negative values only!!\n");
+    68	    }
+    69	    else if (input < 100)
+    70	    {
+    71	      printf("\nError! Minimum integer is 100!\n");
+    72	    }
+    73	    else 
+    74	    {
+    75	      //no error
+    76	    }
+    77	  } while(input < 100);
+    78	
+    79	  return input;
+    80	} //inputValue
+    81	
+    82	/******************************************************************************
+    83	* Function:    inputDigit 
+    84	* Description: the function allows the user to input the digits that will be used 
+    85	* Parameters:  none
+    86	* Return:      int, digit, the digit that is used in rest of program 
+    87	******************************************************************************/
+    88	int inputDigit(void)
+    89	{
+    90	  int digit; //the entered digit to search in the given value
+    91	  int n = 1; //counter
+    92	  do
+    93	  {
+    94	    digit = 1; //initialize
+    95	    
+    96	    if (digit > 0 && digit < 10)
+    97	    {
+    98	      printf("Enter digit #%d -> ", n);
+    99	      scanf("%d", &digit);
+   100	    }
+   101	    else if (digit <= 0)
+   102	    {
+   103	      printf("\nError! Digit must be greater than zero!!\n");
+   104	    }
+   105	    else
+   106	    {
+   107	      printf("\nError! Digit must be smaller than ten!!\n");
+   108	    }
+   109	    n++;
+   110	  } while (digit <= 0 || digit >= 10);
+   111	
+   112	  return digit;
+   113	} //inputDigit
+   114	
+   115	/******************************************************************************
+   116	* Function:    output
+   117	* Description: prints out the final outputs
+   118	* Parameters:  num1count, int, the digit count for the first number 
+   119	*              num2count, int, the digit count for the second number
+   120	*              num3count, int, the digit count for the third number 
+   121	*              numCombos, int, the number of possible combinations of the user input
+   122	* Return:      void
+   123	******************************************************************************/
+   124	void output(int num1count, int num2count, int num3count, int numCombos)
+   125	{
+   126	  printf("\nDigit Counts: %d %d %d \n", num1count, num2count, num3count);
+   127	  printf("Possible Combinations: %d\n", numCombos);
+   128	  return;
+   129	} //output
+   130	
+   131	/******************************************************************************
+   132	* Function:    comboCounter 
+   133	* Description: counts the number of combos that each integer can make 
+   134	* Parameters:  input, long long int, the user inputted integer
+   135	               digit1, int, the user inputted first digit 
+   136	               digit2, int, the user inputted second digit 
+   137	               digit3, int, the user inputted third digit
+   138	               digitCount2, int, the number of times the second digit is in the integer 
+   139	               digitCount3, int, the number of times the third digit is in the integer 			   
+   140	* Return:      comboCount, int, the number of combinations that the integer can have 
+   141	******************************************************************************/
+   142	int comboCounter(long long int input, int digit1, int digit2, int digit3, int digitCount2, int digitCount3)
+   143	{
+   144	  long long int  inputSaver1; //variable to save the input
+   145	  //long long int  inputSaver2;
+   146	  int firstDigit = 0; //the number of the smallest digit calculated from the modulus operation
+   147	  int comboCount = 0; //the counter for the number of combos
+   148	  int n;                      // loop update variable 
+   149	  int m;                      // loop update variable 
+   150	  long long int inputSaver2;  // tracking variable to see possible combos 
+   151	  
+   152	  for (n = 1; n <= digitCount3; n++)
+   153	  {
+   154	    do 
+   155	    {
+   156	      firstDigit = input % 10;      // setting first digit equal to the last digit of the integer 
+   157	      input /= 10;                  // removing last digit from the integer 
+   158	    } while(firstDigit != digit3);
+   159	    inputSaver1 = input;            // setting input saver as the first rotation of the integer 
+   160	    printf("inputSaver = %lld\n", inputSaver1);
+   161	    printf("input = %lld, firstDigit = %d\n", input, firstDigit);
+   162	    for (m =1; m <= digitCount2; m++)
+   163	    {
+   164	      do 
+   165	      {
+   166	        firstDigit = input % 10;        // making the first digit the last digit 
+   167	        input /= 10;                    // removing a digit from the integer 
+   168	        printf("input = %lld, firstDigit = %d\n", input, firstDigit);
+   169	 
+   170	      } while((firstDigit != digit2) && (firstDigit != 0));
+   171	      inputSaver2 = input;
+   172	      do
+   173	      {
+   174	        firstDigit = input % 10;         // making the first digit the last digit 
+   175	        input /= 10;                     // removing a digit from the integer 
+   176	        printf("input = %lld, firstDigit = %d\n", input, firstDigit);
+   177	      } while((firstDigit != digit1) && (firstDigit != 0));
+   178	      comboCount++;                      // updating the combo count 
+   179	      printf("combo: %d", comboCount);
+   180	      while (input)
+   181	      {
+   182	        firstDigit = input % 10;         // making the first digit the last digit of the integer 
+   183	        input /= 10;                     // removing a digit from the integer 
+   184	        printf("input = %lld, firstDigit = %d\n", input, firstDigit);
+   185	        if (firstDigit == digit1)
+   186	        {
+   187	          comboCount++;                  // updating the combo count 
+   188	          printf("combo: %d\n",comboCount);
+   189	        }
+   190	      }
+   191	      input = inputSaver2;                // tracking the rotations 
+   192	      printf("inputSaver2 = %lld\n",input);
+   193	     
+   194	    }
+   195	    input = inputSaver1;                  // tracking the rotations 
+   196	    printf("inputSaver1 = %lld\n", input);
+   197	  }
+   198	    
+   199	  return comboCount;
+   200	} //comboCounter

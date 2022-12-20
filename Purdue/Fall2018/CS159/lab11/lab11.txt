@@ -1,0 +1,259 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: lab11.c
+Submission: 2018-11-14 10:45
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  Lab #11
+     3	* Lab Section: Tuesday, 11:30, SC189
+     4	* Description: Program accepts 20 integers from user and places them into an array. The program then follows the Collatz Conjecture and finds how many conversions are required to reach the value one. The program then prints the original array, Collatz Conjecture array and the indices of the max and min conversion values.
+     5	* Programmers: Tomoki Koike koike@purdue.edu
+     6	*              Madison Green green326@purdue.edu
+     7	*              Daniel Cinal dcinal@purdue.edu
+     8	******************************************************************************/
+     9	#include <stdio.h>
+    10	#include <math.h>
+    11	#include <stdlib.h>
+    12	
+    13	#define INPUT 20
+    14	
+    15	// function declarations
+    16	void getData(int []);
+    17	void calc(int [], int []);
+    18	int findMin(int []);
+    19	int findMax(int[]);
+    20	void print(int [], int [], int, int);
+    21	
+    22	int main(void)
+    23	{
+    24	  // function declarations 
+    25	  int inputList[INPUT];   // user defined array
+    26	  int collatz[INPUT];     // collatz manipulated array
+    27	  int minVal;             // calculated minimum value of collatz manipulated 
+    28	  // array
+    29	  int maxVal;             // calculated maximum value of collatz manipulated 
+    30	  // array
+    31	
+    32	  // function calls
+    33	  getData(inputList);
+    34	  calc(inputList, collatz);
+    35	  minVal = findMin(collatz);
+    36	  maxVal = findMax(collatz);
+    37	  print(inputList, collatz, minVal, maxVal);
+    38	
+    39	  // return
+    40	  return 0;
+    41	    
+    42	} // main
+    43	
+    44	/******************************************************************************
+    45	 * Function:    getData
+    46	 * Description: funtion prompts user to enter twenty integers and then places
+    47	 *              values into an array
+    48	 * Parameters:  input, int, the user input array
+    49	 * Return:      N/A
+    50	 ******************************************************************************/
+    51	void getData(int input[])
+    52	{
+    53	  // local declarations
+    54	  int i;       // counter for for loop
+    55	
+    56	  // statements
+    57	  printf("Enter 20 integers -> ");
+    58	  for (i = 0; i < INPUT; i++)
+    59	  {
+    60	    scanf("%d", &input[i]);
+    61	  }
+    62	  printf("\n");
+    63	
+    64	  // return
+    65	  return;
+    66	
+    67	} // getData
+    68	
+    69	/******************************************************************************
+    70	 * Function:    calc
+    71	 * Description: This fucntion converts the given elements in the array and counts the number of conversion for each element and makes an array consisting of the counts for each element.
+    72	 * Parameters:  array, int, the user input array
+    73	 * Return:      int, the array for the count of collatz conversion
+    74	 ******************************************************************************/
+    75	void calc(int array[], int collatz[])
+    76	{
+    77	  //Declarations
+    78	  int element;      // defines the i-th element in the given array
+    79	  int count;        // initializes the "count"
+    80	  int i;            // counter for for loop
+    81	
+    82	  //Statements
+    83	  for (i = 0; i < 20; i++)
+    84	  {
+    85	    // defining the i-th element in the given array
+    86	    element = array[i];
+    87	
+    88	    // initializing the "count" so that it resets to zero for each of the for loop iteration
+    89	    count = 0;
+    90	
+    91	    /* The Collatz Conjecture is a theory that any number can be converted to one by using
+    92	     * two ways of conversion: when the number is "A" and if mod(A)=0 we do the conversion
+    93	     * of A/2, and if mod(A)=1 then we do the conversion of 3A+1. By repeating these two
+    94	     * methods A will eventually become 1.*/
+    95	    while (element != 1)
+    96	    {
+    97	      if (element % 2 == 0)
+    98	      {
+    99	        element /= 2;
+   100	        count++;
+   101	      }
+   102	      else
+   103	      {
+   104	        element = 3 * element + 1;
+   105	        count++;
+   106	      }
+   107	    } 
+   108	    collatz[i] = count;
+   109	  }
+   110	  return;
+   111	    
+   112	} // calc
+   113	
+   114	/******************************************************************************
+   115	 * Function:    print
+   116	 * Description: function accepts all desired outputs and presents them in 
+   117	 *              the required format
+   118	 * Parameters:  input, int, user defined array
+   119	 *              collatz, int, collatz manipulated array
+   120	 *              minVal, int, calculated minimum value of collatz manipulated 
+   121	 *              array
+   122	 *              maxVal, int, calculated maximum value of collatz manipulated 
+   123	 *              array
+   124	 * Return:      N/A
+   125	 ******************************************************************************/
+   126	void print(int input[], int collatz[], int minVal, int maxVal)
+   127	{
+   128	  // local declarations
+   129	  int i;        // counter for for loop
+   130	
+   131	  // statements
+   132	  printf("Data as input by user: ");
+   133	  for(i = 0; i < INPUT; i++)
+   134	  {
+   135	    printf("%d ", input[i]);
+   136	  }
+   137	  printf("\n");
+   138	  printf("Number of conversions: ");
+   139	  for(i = 0; i < INPUT; i++)
+   140	  {
+   141	    printf("%d ", collatz[i]);
+   142	  }
+   143	  printf("\n");
+   144	  printf("Index of smallest conversions: %d\n", minVal);
+   145	  printf("Index of largest conversions: %d\n", maxVal);
+   146	
+   147	  // return
+   148	  return;
+   149	    
+   150	} // print
+   151	
+   152	/******************************************************************************
+   153	 * Function:    findMin
+   154	 * Description: This function finds the index within the array of the element 
+   155	 *              with the smallest number of conversions
+   156	 * Parameters:  array, int, the given array
+   157	 * Return:      int, the index with the minimum value
+   158	 ******************************************************************************/
+   159	int findMin(int array[])
+   160	{
+   161	  // Declarations
+   162	  int element1;     //the i-th element in the given array
+   163	  int element2;     //the second i-th element in the given array
+   164	  int i;            //the counter for the for loop
+   165	  int min;          //the minimum   
+   166	  int minIndex;     //the minimum index
+   167	
+   168	  // Statements
+   169	  for (i = 0; i <= 18; i++)
+   170	  {
+   171	    element1 = array[i];
+   172	    element2 = array[i + 1];
+   173	    if (i == 1)
+   174	    {
+   175	      if (element1 > element2)
+   176	      {
+   177	        min = element2;
+   178	        minIndex = i + 1;
+   179	      }
+   180	      else if (element1 < element2)
+   181	      {
+   182	        min = element1;
+   183	        minIndex = i;
+   184	      }
+   185	    }
+   186	    else 
+   187	    {
+   188	      if (min > element2)
+   189	      {
+   190	        min = element2;
+   191	        minIndex = i + 1;
+   192	      }
+   193	    }
+   194	  }
+   195	  return minIndex;
+   196	    
+   197	} // findMin
+   198	
+   199	/******************************************************************************
+   200	 * Function:    findMax
+   201	 * Description: This function finds the index within the array of the element 
+   202	 *              with the largest number of conversions
+   203	 * Parameters:  array, int, the given array
+   204	 * Return:      int, the index with the maximum value
+   205	 ******************************************************************************/
+   206	int findMax(int array[])
+   207	{
+   208	  // Declarations
+   209	  int element1;     //the i-th element in the given array
+   210	  int element2;     // the second i-th element in the given array
+   211	  int i;            //the counter for the for loop
+   212	  int max;          //the minimum   
+   213	  int maxIndex;     //the minimum index
+   214	
+   215	  // Statements
+   216	  for (i = 0; i <= 18; i++)
+   217	  {
+   218	    element1 = array[i];
+   219	    element2 = array[i + 1];
+   220	    if (i == 1)
+   221	    {
+   222	      if (element1 > element2)
+   223	      {
+   224	        max = element1;
+   225	        maxIndex = i;
+   226	      }
+   227	      else if (element1 < element2)
+   228	      {
+   229	        max = element2;
+   230	        maxIndex = i + 1;
+   231	      }
+   232	    }
+   233	    else 
+   234	    {
+   235	      if (max < element2)
+   236	      {
+   237	        max = element2;
+   238	        maxIndex = i + 1;
+   239	      }
+   240	    }
+   241	  }
+   242	  return maxIndex;
+   243	    
+   244	} // findMax

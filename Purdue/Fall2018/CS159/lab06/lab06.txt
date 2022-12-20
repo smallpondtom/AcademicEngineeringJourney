@@ -1,0 +1,212 @@
+The following program submission has been recorded:
+
+Student: koike
+Class: CS159
+Section: 62070
+Assignment: lab06.c
+Submission: 2018-10-12 18:06
+
+If this is incorrect, you are responsible for resubmitting the assignment or seeking assistance from a course staff member prior to the due date! Assignments will not be accepted by e-mail.
+
+If this is for a lab assignment, only one member is allowed to make a submission for the group.  Graders will not evaluate submissions from multiple group members to determine which effort you actually want graded.
+
+*** Please do not reply to this email ***
+
+The contents of the submission:
+     1	/******************************************************************************
+     2	* Assignment:  lab 06 
+     3	* Lab Section: Tuesday, 11:30, SC Hall 189
+     4	* Description: This program is a processor which only has a limited instruction set and is capable of conducting addition, subtraction,multiplication, and division of two non-negative integer values. Three Binary instruction codes are given to the processor by the user and the processor will do the calculation to output a single non-negative integer value.
+     5	* Programmers: Tomoki Koike, koike@purdue.edu
+     6	*              Lauren Anderson ander867@purdue.edu
+     7	*              Luke Murphy murph282@purdue.edu
+     8	******************************************************************************/
+     9	
+    10	#include <stdio.h>
+    11	#include <math.h>
+    12	
+    13	long long int input1(void);
+    14	long long int input2(void);
+    15	long long int input3(void);
+    16	long long int biToDec(long long int);
+    17	int calValue1(long long int);
+    18	int calValue2(long long int);
+    19	int process(long long int, int, int);
+    20	void output(int);
+    21	
+    22	int main(void)
+    23	{
+    24	  long long int code1;  //the first instruction code
+    25	  long long int code2;  //the second instruction code
+    26	  long long int code3;  //the thrid instruction code
+    27	  int value1;           //the value1 given from and calculated from the instruction code  
+    28	  int value2;           //the value2 given from and calculated from the instruction code
+    29	
+    30	  // the user input 
+    31	  code1 = input1();     //calling function for input1 
+    32	  code2 = input2();     //calling function for input2
+    33	  code3 = input3();     //calling function for input3
+    34	  
+    35	  // figuring out the values for the first instruction code 
+    36	  value1 = calValue1(code1);  //calling function for calValue1
+    37	  value2 = calValue2(code1);  //calling function for calValue2
+    38	  // Initiate the first algebraic calculation ordered by the instruction code to retrieve the new value1
+    39	  value1 = process(code1, value1, value2);  //calling function for process
+    40	  // figuring out the value2 for the second instruction code
+    41	  value2 = calValue2(code2);                //calling function for calValue2 
+    42	  // Initiate the second algebraic calculation ordered by the second instruction code to retrieve the new value1
+    43	  value1 = process(code2, value1, value2);  //calling function for process
+    44	  // figuring out the value2 for the third instruction code
+    45	  value2 = calValue2(code3);                //calling function for calValue2
+    46	  // Inititate the third algebraic calculation ordered by the third instruction code to retreive the new value1
+    47	  value1 = process(code3, value1, value2);  //calling function for process
+    48	  
+    49	  // printing out the final result
+    50	  output(value1);  //calling function for output
+    51	  return 0;
+    52	
+    53	} //main
+    54	
+    55	/******************************************************************************
+    56	* Function:    input1
+    57	* Description: Allows the user to input the instruction code.
+    58	* Parameters:  none
+    59	* Return:      long long int, the first instruction code which is a binary code 
+    60	******************************************************************************/
+    61	long long int input1(void)
+    62	{
+    63	  long long int code1; //the inputted  first instruction code 
+    64	  
+    65	  printf("Enter full instruction code #1 -> ");
+    66	  scanf("%lld",&code1);
+    67	  return code1;
+    68	} //input1
+    69	
+    70	/******************************************************************************
+    71	* Function:    input2
+    72	* Description: Allows the user to input the second instruction code.
+    73	* Parameters:  none
+    74	* Return:      long long int, the second instruction code which is a binary code
+    75	******************************************************************************/
+    76	long long int input2(void)
+    77	{
+    78	  long long int code2; //the inputted second instruction code 
+    79	  
+    80	  printf("Enter full instruction code #2 -> ");
+    81	  scanf("%lld",&code2);
+    82	  return code2;
+    83	} //input2
+    84	
+    85	/******************************************************************************
+    86	* Function:    input3
+    87	* Description: Allows the user to input the third instruction code.
+    88	* Parameters:  none
+    89	* Return:      long long int, the third instruction code which is a binary code
+    90	******************************************************************************/
+    91	long long int input3(void)
+    92	{
+    93	  long long int code3; //the inputted third instruction code 
+    94	
+    95	  printf("Enter full instruction code #3 -> ");
+    96	  scanf("%lld",&code3);
+    97	  return code3;
+    98	} //input3
+    99	
+   100	/******************************************************************************
+   101	* Function:    calValue1 
+   102	* Description: Calculates the decimal value that corresponds with the first four digits of the binary instruction code
+   103	* Parameters:  code, long long int, the instruction code inputted by the user
+   104	* Return:      int, the decimal value calculated by the function
+   105	******************************************************************************/
+   106	int calValue1(long long int code)
+   107	{
+   108	  int value1;  //value1 that is extracted from instruction code and converted to decimals
+   109	   
+   110	  code = (code % 100000000) / 10000;
+   111	
+   112	  value1 = biToDec(code); 
+   113	  return value1;
+   114	} //calValue1
+   115	
+   116	/******************************************************************************
+   117	* Function:    calValue2
+   118	* Description: Calculates the decimal value that corresponds with from the fifth to eighth digits of the binary instruction code 
+   119	* Parameters:  code, long long int, the instruction code inputted by the user 
+   120	* Return:      int, the decimal value calculated by the function
+   121	******************************************************************************/
+   122	int calValue2(long long int code)
+   123	{
+   124	  int value2; //value2 that is extracted from the instruction code and then converted to decimals 
+   125	   
+   126	  code = code % 10000;
+   127	
+   128	  value2 = biToDec(code);
+   129	  return value2;
+   130	} //calValue2
+   131	
+   132	/******************************************************************************
+   133	* Function:    process
+   134	* Description: Conducts a flow of algebraic calculations using if statements and the given values (value1 and value) in which the calculation depends on the digits from the ninth and the twelfth digit of the inputted instruction code. 
+   135	* Parameters:  code, long long int, the instruction code which orders what algebraic calculation to do
+   136	*              value1, int, the given first value which is used in the calculation
+   137	*              value2, int, the given second value which is used in the calculation
+   138	* Return:      int, the result of the calculations using the values: value1 and value2 
+   139	*******************************************************************************/
+   140	int process(long long int code, int value1, int value2)
+   141	{
+   142	  int newValue; //the calculated new value for value1
+   143	
+   144	  code = (code + 111100000000) / 100000000;
+   145	  
+   146	  if (code == 1111 || code == 1211)
+   147	  {
+   148	    newValue = value1 + value2;
+   149	  }
+   150	  else if (code == 1112)
+   151	  {
+   152	    newValue = value1 - value2;
+   153	  }
+   154	  else if (code == 1212)
+   155	  {
+   156	    newValue = value2 - value1;
+   157	  }
+   158	  else if (code == 1121 || code == 1221)
+   159	  {
+   160	    newValue = value1 * value2;
+   161	  }
+   162	  else if (code == 1122)
+   163	  {
+   164	    newValue = value1 / value2;
+   165	  }
+   166	  else
+   167	  {
+   168	    newValue = value2 / value1;
+   169	  }
+   170	  return newValue;
+   171	} //process
+   172	
+   173	/******************************************************************************
+   174	* Function:    biToDec
+   175	* Description: Converts the binary code to a decimal number
+   176	* Parameters:  biNum, long long int, the binary code that will be converted to a decimal number
+   177	* Return:      long long int, the decimal number that was converted from the given binary code 
+   178	******************************************************************************/
+   179	long long int biToDec(long long int biNum)
+   180	{
+   181	  long long int decNum; //the decimal number converted by from the binary code 
+   182	
+   183	  decNum = (biNum / 1000 * pow(2,3)) + ((biNum % 1000) / 100 * pow(2,2)) + ((biNum % 100) / 10 * 2) + (biNum % 10);
+   184	  return decNum;
+   185	} //biToDec
+   186	
+   187	/******************************************************************************
+   188	* Function:    output      
+   189	* Description: printing out the result
+   190	* Parameters:  value1, int, the final calculated value
+   191	* Return:      void
+   192	******************************************************************************/
+   193	void output(int value1)
+   194	{
+   195	  printf("\nFinal Result: %d\n", value1);
+   196	  return;
+   197	} //output
