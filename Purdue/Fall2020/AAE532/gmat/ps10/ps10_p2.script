@@ -1,0 +1,191 @@
+%General Mission Analysis Tool(GMAT) Script
+%Created: 2020-11-30 19:49:49
+
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft sat1;
+GMAT sat1.DateFormat = UTCGregorian;
+GMAT sat1.Epoch = '01 Jan 2000 11:59:28.000';
+GMAT sat1.CoordinateSystem = Sun2000Eq;
+GMAT sat1.DisplayStateType = Keplerian;
+GMAT sat1.SMA = 149597898;
+GMAT sat1.ECC = 0;
+GMAT sat1.INC = 0;
+GMAT sat1.RAAN = 0;
+GMAT sat1.AOP = 0;
+GMAT sat1.TA = 0;
+GMAT sat1.DryMass = 850;
+GMAT sat1.Cd = 2.2;
+GMAT sat1.Cr = 1.8;
+GMAT sat1.DragArea = 15;
+GMAT sat1.SRPArea = 1;
+GMAT sat1.SPADDragScaleFactor = 1;
+GMAT sat1.SPADSRPScaleFactor = 1;
+GMAT sat1.NAIFId = -10000001;
+GMAT sat1.NAIFIdReferenceFrame = -9000001;
+GMAT sat1.OrbitColor = Red;
+GMAT sat1.TargetColor = Teal;
+GMAT sat1.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT sat1.CdSigma = 1e+70;
+GMAT sat1.CrSigma = 1e+70;
+GMAT sat1.Id = 'SatId';
+GMAT sat1.Attitude = CoordinateSystemFixed;
+GMAT sat1.SPADSRPInterpolationMethod = Bilinear;
+GMAT sat1.SPADSRPScaleFactorSigma = 1e+70;
+GMAT sat1.SPADDragInterpolationMethod = Bilinear;
+GMAT sat1.SPADDragScaleFactorSigma = 1e+70;
+GMAT sat1.ModelFile = 'aura.3ds';
+GMAT sat1.ModelOffsetX = 0;
+GMAT sat1.ModelOffsetY = 0;
+GMAT sat1.ModelOffsetZ = 0;
+GMAT sat1.ModelRotationX = 0;
+GMAT sat1.ModelRotationY = 0;
+GMAT sat1.ModelRotationZ = 0;
+GMAT sat1.ModelScale = 1;
+GMAT sat1.AttitudeDisplayStateType = 'Quaternion';
+GMAT sat1.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT sat1.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT sat1.EulerAngleSequence = '321';
+
+
+
+
+
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel MarsTwoBody_ForceModel;
+GMAT MarsTwoBody_ForceModel.CentralBody = Mars;
+GMAT MarsTwoBody_ForceModel.PrimaryBodies = {Mars};
+GMAT MarsTwoBody_ForceModel.Drag = None;
+GMAT MarsTwoBody_ForceModel.SRP = Off;
+GMAT MarsTwoBody_ForceModel.RelativisticCorrection = Off;
+GMAT MarsTwoBody_ForceModel.ErrorControl = RSSStep;
+GMAT MarsTwoBody_ForceModel.GravityField.Mars.Degree = 4;
+GMAT MarsTwoBody_ForceModel.GravityField.Mars.Order = 4;
+GMAT MarsTwoBody_ForceModel.GravityField.Mars.StmLimit = 100;
+GMAT MarsTwoBody_ForceModel.GravityField.Mars.PotentialFile = 'Mars50c.cof';
+GMAT MarsTwoBody_ForceModel.GravityField.Mars.TideModel = 'None';
+
+Create ForceModel Helio_ForceModel;
+GMAT Helio_ForceModel.CentralBody = Sun;
+GMAT Helio_ForceModel.PointMasses = {Sun};
+GMAT Helio_ForceModel.Drag = None;
+GMAT Helio_ForceModel.SRP = Off;
+GMAT Helio_ForceModel.RelativisticCorrection = Off;
+GMAT Helio_ForceModel.ErrorControl = RSSStep;
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator MarsTwoBody;
+GMAT MarsTwoBody.FM = MarsTwoBody_ForceModel;
+GMAT MarsTwoBody.Type = RungeKutta89;
+GMAT MarsTwoBody.InitialStepSize = 60;
+GMAT MarsTwoBody.Accuracy = 9.999999999999999e-12;
+GMAT MarsTwoBody.MinStep = 0.001;
+GMAT MarsTwoBody.MaxStep = 2700;
+GMAT MarsTwoBody.MaxStepAttempts = 50;
+GMAT MarsTwoBody.StopIfAccuracyIsViolated = true;
+
+Create Propagator Helio;
+GMAT Helio.FM = Helio_ForceModel;
+GMAT Helio.Type = RungeKutta89;
+GMAT Helio.InitialStepSize = 60;
+GMAT Helio.Accuracy = 9.999999999999999e-12;
+GMAT Helio.MinStep = 0.001;
+GMAT Helio.MaxStep = 2700;
+GMAT Helio.MaxStepAttempts = 50;
+GMAT Helio.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Burns
+%----------------------------------------
+
+Create ImpulsiveBurn ImpulsiveBurn1;
+GMAT ImpulsiveBurn1.CoordinateSystem = Local;
+GMAT ImpulsiveBurn1.Origin = Sun;
+GMAT ImpulsiveBurn1.Axes = VNB;
+GMAT ImpulsiveBurn1.Element1 = 3.5134;
+GMAT ImpulsiveBurn1.Element2 = 0;
+GMAT ImpulsiveBurn1.Element3 = 1.6867;
+GMAT ImpulsiveBurn1.DecrementMass = false;
+GMAT ImpulsiveBurn1.Isp = 300;
+GMAT ImpulsiveBurn1.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn ImpulsiveBurn2;
+GMAT ImpulsiveBurn2.CoordinateSystem = Local;
+GMAT ImpulsiveBurn2.Origin = Sun;
+GMAT ImpulsiveBurn2.Axes = VNB;
+GMAT ImpulsiveBurn2.Element1 = 1.1392;
+GMAT ImpulsiveBurn2.Element2 = 0;
+GMAT ImpulsiveBurn2.Element3 = -5.3007;
+GMAT ImpulsiveBurn2.DecrementMass = false;
+GMAT ImpulsiveBurn2.Isp = 300;
+GMAT ImpulsiveBurn2.GravitationalAccel = 9.81;
+
+%----------------------------------------
+%---------- Coordinate Systems
+%----------------------------------------
+
+Create CoordinateSystem Mars2000Eq;
+GMAT Mars2000Eq.Origin = Mars;
+GMAT Mars2000Eq.Axes = MJ2000Eq;
+
+Create CoordinateSystem Sun2000Eq;
+GMAT Sun2000Eq.Origin = Sun;
+GMAT Sun2000Eq.Axes = MJ2000Eq;
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create OrbitView OrbitView1;
+GMAT OrbitView1.SolverIterations = Current;
+GMAT OrbitView1.UpperLeft = [ 0.002352941176470588 0 ];
+GMAT OrbitView1.Size = [ 0.8 0.85 ];
+GMAT OrbitView1.RelativeZOrder = 76;
+GMAT OrbitView1.Maximized = true;
+GMAT OrbitView1.Add = {sat1, Sun};
+GMAT OrbitView1.CoordinateSystem = Sun2000Eq;
+GMAT OrbitView1.DrawObject = [ true true ];
+GMAT OrbitView1.DataCollectFrequency = 1;
+GMAT OrbitView1.UpdatePlotFrequency = 50;
+GMAT OrbitView1.NumPointsToRedraw = 0;
+GMAT OrbitView1.ShowPlot = true;
+GMAT OrbitView1.MaxPlotPoints = 4000000;
+GMAT OrbitView1.ShowLabels = true;
+GMAT OrbitView1.ViewPointReference = Sun;
+GMAT OrbitView1.ViewPointVector = [ 0 0 30000 ];
+GMAT OrbitView1.ViewDirection = Sun;
+GMAT OrbitView1.ViewScaleFactor = 1;
+GMAT OrbitView1.ViewUpCoordinateSystem = Sun2000Eq;
+GMAT OrbitView1.ViewUpAxis = Z;
+GMAT OrbitView1.EclipticPlane = Off;
+GMAT OrbitView1.XYPlane = On;
+GMAT OrbitView1.WireFrame = Off;
+GMAT OrbitView1.Axes = On;
+GMAT OrbitView1.Grid = Off;
+GMAT OrbitView1.SunLine = Off;
+GMAT OrbitView1.UseInitialView = On;
+GMAT OrbitView1.StarCount = 7000;
+GMAT OrbitView1.EnableStars = Off;
+GMAT OrbitView1.EnableConstellations = On;
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+BeginMissionSequence;
+Propagate Helio(sat1) {sat1.ElapsedDays = 365, OrbitColor = [255 0 0]};
+Maneuver ImpulsiveBurn1(sat1);
+Propagate Helio(sat1) {sat1.Sun.TA = 134.2200, OrbitColor = [0 0 255]};
+Maneuver ImpulsiveBurn2(sat1);
+Propagate Helio(sat1) {sat1.ElapsedDays = 1000, OrbitColor = [255 128 0]};

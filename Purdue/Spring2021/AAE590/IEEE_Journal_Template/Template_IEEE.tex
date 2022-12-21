@@ -1,0 +1,106 @@
+%%%%% Conference Version%%%%%%
+
+%\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+
+
+
+%%%% Brief Journal Paper version%%%%%
+\documentclass[letterpaper, 10 pt, journal, twoside]{IEEEtran}
+
+
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+
+\usepackage{amsmath}
+\usepackage{epsfig}
+\usepackage{color}
+
+%%%% Selective part from steve.lib
+\newcommand{\rank}{{\rm rank\;}}
+\newcommand{\image}{{\rm Im\;}}
+\newcommand{\stack}{{\rm stack\;}}
+\newcommand{\Span}{{\rm span\;}}
+\newcommand{\diag}{{\rm diag\;}}
+\newcommand{\col}{{\rm col\;}}
+\newcommand{\cp}{{\rm cp\;}}
+\newcommand{\R}{\mathbb{R}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{problem}{Problem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{property}{Property}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{assumption}{Assumption}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\def\n{{\bf n}}
+\def\m{{\bf m}}
+\def\r{{\bf r}}
+\def\c{{\bf c}}
+\def\scr#1{{\mathcal #1}}
+\def\rep#1{(\ref{#1})}
+\def\eq#1{\begin{equation}#1\end{equation}}
+\def\qed{ \rule{.1in}{.1in}}
+
+%%%%% Redefined the \matt to avoid conflicts with the amsmatch package
+\def\matt#1{\begin{bmatrix}#1\end{bmatrix}}
+
+
+%%%%% Final Version of Journal%%%%
+%
+%\IEEEoverridecommandlockouts
+%\overrideIEEEmargins
+
+
+\title{Your Title}
+
+
+\author{ Your Name
+\thanks{Your Affiliation}
+}
+
+
+
+\begin{document}
+
+\maketitle
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+Put your abstract here.
+\end{abstract}
+\begin{IEEEkeywords}
+Write key words here.
+\end{IEEEkeywords}
+
+
+
+\section{Introduction and Motivation}
+You could cite a reference here. \cite{SMA16TAC}.
+\section{Problem Formulation}
+\section{Main Results}
+\section{Your Ideas of Further Improvements}
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{Reference}
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
