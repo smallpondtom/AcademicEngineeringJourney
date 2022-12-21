@@ -1,0 +1,23 @@
+omega1 = 95 RPM
+
+         RiseTime: 0.3216
+    TransientTime: 0.9124
+     SettlingTime: 0.9124
+      SettlingMin: 86.1496
+      SettlingMax: 99.2648
+        Overshoot: 4.6256
+       Undershoot: 1.5809e-40
+             Peak: 99.2648
+         PeakTime: 0.6559
+
+omega2 = 120 RPM
+
+         RiseTime: 0.3214
+    TransientTime: 0.9123
+     SettlingTime: 0.9123
+      SettlingMin: 108.1769
+      SettlingMax: 125.3781
+        Overshoot: 4.6181
+       Undershoot: 1.5809e-40
+             Peak: 125.3781
+         PeakTime: 0.6800

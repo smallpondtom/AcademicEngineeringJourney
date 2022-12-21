@@ -1,0 +1,228 @@
+%General Mission Analysis Tool(GMAT) Script
+%Created: 2022-01-21 00:42:51
+
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft Hubble;
+GMAT Hubble.DateFormat = UTCGregorian;
+GMAT Hubble.Epoch = '20 Jan 2022 11:59:28.000';
+GMAT Hubble.CoordinateSystem = EarthMJ2000Eq;
+GMAT Hubble.DisplayStateType = Keplerian;
+GMAT Hubble.SMA = 6923.000000000005;
+GMAT Hubble.ECC = 0.000237699999999839;
+GMAT Hubble.INC = 28.471;
+GMAT Hubble.RAAN = 68.40110000000001;
+GMAT Hubble.AOP = 238.1015999999156;
+GMAT Hubble.TA = 239.1213000000843;
+GMAT Hubble.DryMass = 850;
+GMAT Hubble.Cd = 2.2;
+GMAT Hubble.Cr = 1.8;
+GMAT Hubble.DragArea = 15;
+GMAT Hubble.SRPArea = 1;
+GMAT Hubble.SPADDragScaleFactor = 1;
+GMAT Hubble.SPADSRPScaleFactor = 1;
+GMAT Hubble.NAIFId = -10000001;
+GMAT Hubble.NAIFIdReferenceFrame = -9000001;
+GMAT Hubble.OrbitColor = Red;
+GMAT Hubble.TargetColor = Teal;
+GMAT Hubble.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT Hubble.CdSigma = 1e+70;
+GMAT Hubble.CrSigma = 1e+70;
+GMAT Hubble.Id = 'SatId';
+GMAT Hubble.Attitude = CoordinateSystemFixed;
+GMAT Hubble.SPADSRPInterpolationMethod = Bilinear;
+GMAT Hubble.SPADSRPScaleFactorSigma = 1e+70;
+GMAT Hubble.SPADDragInterpolationMethod = Bilinear;
+GMAT Hubble.SPADDragScaleFactorSigma = 1e+70;
+GMAT Hubble.ModelFile = 'aura.3ds';
+GMAT Hubble.ModelOffsetX = 0;
+GMAT Hubble.ModelOffsetY = 0;
+GMAT Hubble.ModelOffsetZ = 0;
+GMAT Hubble.ModelRotationX = 0;
+GMAT Hubble.ModelRotationY = 0;
+GMAT Hubble.ModelRotationZ = 0;
+GMAT Hubble.ModelScale = 1;
+GMAT Hubble.AttitudeDisplayStateType = 'Quaternion';
+GMAT Hubble.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT Hubble.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT Hubble.EulerAngleSequence = '321';
+
+Create Spacecraft Hubble_circ;
+GMAT Hubble_circ.DateFormat = UTCGregorian;
+GMAT Hubble_circ.Epoch = '20 Jan 2022 11:59:28.000';
+GMAT Hubble_circ.CoordinateSystem = EarthMJ2000Eq;
+GMAT Hubble_circ.DisplayStateType = Keplerian;
+GMAT Hubble_circ.SMA = 6916;
+GMAT Hubble_circ.ECC = 2.465683952593841e-16;
+GMAT Hubble_circ.INC = 0;
+GMAT Hubble_circ.RAAN = 0;
+GMAT Hubble_circ.AOP = 0;
+GMAT Hubble_circ.TA = 0;
+GMAT Hubble_circ.DryMass = 850;
+GMAT Hubble_circ.Cd = 2.2;
+GMAT Hubble_circ.Cr = 1.8;
+GMAT Hubble_circ.DragArea = 15;
+GMAT Hubble_circ.SRPArea = 1;
+GMAT Hubble_circ.SPADDragScaleFactor = 1;
+GMAT Hubble_circ.SPADSRPScaleFactor = 1;
+GMAT Hubble_circ.NAIFId = -10002001;
+GMAT Hubble_circ.NAIFIdReferenceFrame = -9002001;
+GMAT Hubble_circ.OrbitColor = Green;
+GMAT Hubble_circ.TargetColor = LightGray;
+GMAT Hubble_circ.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT Hubble_circ.CdSigma = 1e+70;
+GMAT Hubble_circ.CrSigma = 1e+70;
+GMAT Hubble_circ.Id = 'SatId';
+GMAT Hubble_circ.Attitude = CoordinateSystemFixed;
+GMAT Hubble_circ.SPADSRPInterpolationMethod = Bilinear;
+GMAT Hubble_circ.SPADSRPScaleFactorSigma = 1e+70;
+GMAT Hubble_circ.SPADDragInterpolationMethod = Bilinear;
+GMAT Hubble_circ.SPADDragScaleFactorSigma = 1e+70;
+GMAT Hubble_circ.ModelFile = 'aura.3ds';
+GMAT Hubble_circ.ModelOffsetX = 0;
+GMAT Hubble_circ.ModelOffsetY = 0;
+GMAT Hubble_circ.ModelOffsetZ = 0;
+GMAT Hubble_circ.ModelRotationX = 0;
+GMAT Hubble_circ.ModelRotationY = 0;
+GMAT Hubble_circ.ModelRotationZ = 0;
+GMAT Hubble_circ.ModelScale = 1;
+GMAT Hubble_circ.AttitudeDisplayStateType = 'Quaternion';
+GMAT Hubble_circ.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT Hubble_circ.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT Hubble_circ.EulerAngleSequence = '321';
+
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel DefaultProp_ForceModel;
+GMAT DefaultProp_ForceModel.CentralBody = Earth;
+GMAT DefaultProp_ForceModel.PrimaryBodies = {Earth};
+GMAT DefaultProp_ForceModel.PointMasses = {Luna};
+GMAT DefaultProp_ForceModel.Drag = None;
+GMAT DefaultProp_ForceModel.SRP = Off;
+GMAT DefaultProp_ForceModel.RelativisticCorrection = Off;
+GMAT DefaultProp_ForceModel.ErrorControl = RSSStep;
+GMAT DefaultProp_ForceModel.GravityField.Earth.Degree = 4;
+GMAT DefaultProp_ForceModel.GravityField.Earth.Order = 4;
+GMAT DefaultProp_ForceModel.GravityField.Earth.StmLimit = 100;
+GMAT DefaultProp_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT DefaultProp_ForceModel.GravityField.Earth.TideModel = 'None';
+
+Create ForceModel Propagator1_ForceModel;
+GMAT Propagator1_ForceModel.CentralBody = Earth;
+GMAT Propagator1_ForceModel.PrimaryBodies = {Earth};
+GMAT Propagator1_ForceModel.Drag = None;
+GMAT Propagator1_ForceModel.SRP = Off;
+GMAT Propagator1_ForceModel.RelativisticCorrection = Off;
+GMAT Propagator1_ForceModel.ErrorControl = RSSStep;
+GMAT Propagator1_ForceModel.GravityField.Earth.Degree = 4;
+GMAT Propagator1_ForceModel.GravityField.Earth.Order = 4;
+GMAT Propagator1_ForceModel.GravityField.Earth.StmLimit = 100;
+GMAT Propagator1_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT Propagator1_ForceModel.GravityField.Earth.TideModel = 'None';
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator DefaultProp;
+GMAT DefaultProp.FM = DefaultProp_ForceModel;
+GMAT DefaultProp.Type = RungeKutta89;
+GMAT DefaultProp.InitialStepSize = 60;
+GMAT DefaultProp.Accuracy = 9.999999999999999e-12;
+GMAT DefaultProp.MinStep = 0.001;
+GMAT DefaultProp.MaxStep = 2700;
+GMAT DefaultProp.MaxStepAttempts = 50;
+GMAT DefaultProp.StopIfAccuracyIsViolated = true;
+
+Create Propagator Propagator1;
+GMAT Propagator1.FM = Propagator1_ForceModel;
+GMAT Propagator1.Type = RungeKutta89;
+GMAT Propagator1.InitialStepSize = 60;
+GMAT Propagator1.Accuracy = 9.999999999999999e-12;
+GMAT Propagator1.MinStep = 0.001;
+GMAT Propagator1.MaxStep = 2700;
+GMAT Propagator1.MaxStepAttempts = 50;
+GMAT Propagator1.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create OrbitView DefaultOrbitView;
+GMAT DefaultOrbitView.SolverIterations = Current;
+GMAT DefaultOrbitView.UpperLeft = [ 0.001764705882352941 0 ];
+GMAT DefaultOrbitView.Size = [ 0.51 0.7199519230769231 ];
+GMAT DefaultOrbitView.RelativeZOrder = 81;
+GMAT DefaultOrbitView.Maximized = true;
+GMAT DefaultOrbitView.Add = {Hubble, Hubble_circ, Earth, Luna};
+GMAT DefaultOrbitView.CoordinateSystem = EarthMJ2000Eq;
+GMAT DefaultOrbitView.DrawObject = [ true true true true ];
+GMAT DefaultOrbitView.DataCollectFrequency = 1;
+GMAT DefaultOrbitView.UpdatePlotFrequency = 50;
+GMAT DefaultOrbitView.NumPointsToRedraw = 0;
+GMAT DefaultOrbitView.ShowPlot = true;
+GMAT DefaultOrbitView.MaxPlotPoints = 20000;
+GMAT DefaultOrbitView.ShowLabels = true;
+GMAT DefaultOrbitView.ViewPointReference = Earth;
+GMAT DefaultOrbitView.ViewPointVector = [ 30000 0 0 ];
+GMAT DefaultOrbitView.ViewDirection = Earth;
+GMAT DefaultOrbitView.ViewScaleFactor = 1;
+GMAT DefaultOrbitView.ViewUpCoordinateSystem = EarthMJ2000Eq;
+GMAT DefaultOrbitView.ViewUpAxis = Z;
+GMAT DefaultOrbitView.EclipticPlane = Off;
+GMAT DefaultOrbitView.XYPlane = On;
+GMAT DefaultOrbitView.WireFrame = Off;
+GMAT DefaultOrbitView.Axes = On;
+GMAT DefaultOrbitView.Grid = Off;
+GMAT DefaultOrbitView.SunLine = Off;
+GMAT DefaultOrbitView.UseInitialView = On;
+GMAT DefaultOrbitView.StarCount = 7000;
+GMAT DefaultOrbitView.EnableStars = On;
+GMAT DefaultOrbitView.EnableConstellations = Off;
+
+Create GroundTrackPlot DefaultGroundTrackPlot;
+GMAT DefaultGroundTrackPlot.SolverIterations = Current;
+GMAT DefaultGroundTrackPlot.UpperLeft = [ 0.001764705882352941 0.4519230769230769 ];
+GMAT DefaultGroundTrackPlot.Size = [ 0.5 0.4495192307692308 ];
+GMAT DefaultGroundTrackPlot.RelativeZOrder = 85;
+GMAT DefaultGroundTrackPlot.Maximized = true;
+GMAT DefaultGroundTrackPlot.Add = {Hubble, Hubble_circ};
+GMAT DefaultGroundTrackPlot.DataCollectFrequency = 1;
+GMAT DefaultGroundTrackPlot.UpdatePlotFrequency = 50;
+GMAT DefaultGroundTrackPlot.NumPointsToRedraw = 0;
+GMAT DefaultGroundTrackPlot.ShowPlot = true;
+GMAT DefaultGroundTrackPlot.MaxPlotPoints = 20000;
+GMAT DefaultGroundTrackPlot.CentralBody = Earth;
+GMAT DefaultGroundTrackPlot.TextureMap = 'ModifiedBlueMarble.jpg';
+
+Create ReportFile ReportFile1;
+GMAT ReportFile1.SolverIterations = Current;
+GMAT ReportFile1.UpperLeft = [ 0 0 ];
+GMAT ReportFile1.Size = [ 0 0 ];
+GMAT ReportFile1.RelativeZOrder = 0;
+GMAT ReportFile1.Maximized = false;
+GMAT ReportFile1.Filename = 'ReportFile1.txt';
+GMAT ReportFile1.Precision = 16;
+GMAT ReportFile1.Add = {Hubble.UTCGregorian, Hubble.EarthMJ2000Eq.X, Hubble.EarthMJ2000Eq.Y, Hubble.EarthMJ2000Eq.Z, Hubble.EarthMJ2000Eq.VX, Hubble.EarthMJ2000Eq.VY, Hubble.EarthMJ2000Eq.VZ};
+GMAT ReportFile1.WriteHeaders = true;
+GMAT ReportFile1.LeftJustify = On;
+GMAT ReportFile1.ZeroFill = Off;
+GMAT ReportFile1.FixedWidth = true;
+GMAT ReportFile1.Delimiter = ' ';
+GMAT ReportFile1.ColumnWidth = 10;
+GMAT ReportFile1.WriteReport = true;
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+BeginMissionSequence;
+Propagate DefaultProp(Hubble) {Hubble.ElapsedSecs = 5700.0};
+Propagate Propagator1(Hubble_circ) {Hubble_circ.ElapsedSecs = 5700};

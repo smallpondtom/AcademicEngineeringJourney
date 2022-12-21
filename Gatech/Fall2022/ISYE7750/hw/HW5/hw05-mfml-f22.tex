@@ -1,0 +1,255 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,graphicx,mathrsfs}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{color}
+
+% format and layout
+\parindent = 0 pt
+\parskip = 8 pt 
+\addtolength{\textwidth}{1in}
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\textheight}{1.6in}
+\addtolength{\topmargin}{-0.8in}
+
+% time and date in footer
+\usepackage{scrtime} 
+\usepackage[draft,scrtime]{prelim2e}
+\renewcommand{\PrelimWords}{Last updated \thistime,~\today}
+\renewcommand{\PrelimText}{\textnormal{\tiny\PrelimTextStyle \PrelimWords}}
+
+\graphicspath{{./Figs/}}
+
+%--------------------------------------------------------------------
+
+\input{defs-mfml}
+
+%--------------------------------------------------------------------
+
+\begin{document}
+
+%--------------------------------------------------------------------
+
+\noindent
+{\bf\large Math Foundations of ML, Fall 2022} \\[3mm]
+{\bf\large Homework \#5} \\[3mm]
+{\bf Due Monday October 31, at 5:00pm ET}\\[3mm]
+%{\bf Reading: XXXX}
+
+{\bf As stated in the syllabus, unauthorized use of previous semester course materials is strictly prohibited in this course.}
+
+\begin{enumerate}
+%--------------------------------------------------------------------
+
+\item In this problem, we will solve a stylized regression problem using the data set \\
+\texttt{hw05p1\_clusterdata.mat}.  This file contains  (noisy) samples of a function $f(t)$ for $t\in[0,1]$.  In fact, the function is the same as the one we used in Homework 4:
+\[
+		f_{\mathrm{true}}(t) = \frac{\sin(12(t+0.2))}{t+0.2}.
+\]
+The sample locations are in the vector \texttt{T}; the sample values are in \texttt{y}.  If you plot these, you will see that the samples come in four clusters.  We are going to use nonlinear regression using the orthobasis of Legendre polynomials --- in the notes, these polynomials were defined on $[-1,1]$, we will use the analogous functions on $[0,1]$.  To compute these, we can use the \texttt{legendreP} command in MATLAB\footnote{For Python, see \url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.legendre.html}.}.  If we define the function handle
+\begin{verbatim}
+lpoly = @(p,z) sqrt(2)*sqrt((2*p+1)/2)*legendreP(p, 2*z-1);
+\end{verbatim}
+Then, for example, \texttt{lpoly(3,T)} will return samples of the 3rd order Legendre polynomial at locations in \texttt{T}. 
+\begin{enumerate}
+	
+	\item Find the best cubic fit to the data using least-squares.  That is, find $w_0,\ldots,w_3$ that minimizes
+	\[
+		\minimize_{\vw}~\sum_{m=1}^M(y_m-f(t_m))^2
+		\quad\text{where}~~f(t) = \sum_{n=0}^{3}w_nv_n(t),
+	\]
+	where $v_n(t)$ is the $n$th order Legendre polynomial adapted to $[0,1]$.
+	Let $\widehat\vw$ be the solution to the above, and $\widehat f$ the corresponding cubic polynomial.  Compute the sample error
+	\[
+		\text{sample error} = \left(\sum_{m=1}^M(y_m-\widehat f(t_m))^2\right)^{1/2} = \|\vy-\mA\widehat\vw\|_2,
+	\]
+	where $\mA$ is the matrix you set up to solve the least-squares problem.  Plot your solution $\widehat{f}(t)$ for $t\in[0,1]$, and overlay the sample values $(t_m,y_m)$ --- \textbf{the sample values should not have lines connecting them}\footnote{Use \texttt{plot(t,y,'o')} in MATLAB, for example.}.
+	
+	\item Compute the generalization error
+	\[
+		\text{generalization error} = \left(\int_{0}^1|\widehat{f}(t)-f_{\mathrm{true}}(t)|^2~\d{t}\right)^{1/2}.
+	\]
+	You can either use some numerical integration package to do this (\texttt{integral()} in MATLAB), or you can simply sample the functions at $5000$ points\footnote{5000 might be overkill here, but these computations are cheap.}, take the sum of the squared difference, divide by $5000$, then take the square root.
+	
+	\item Repeat part (a) and (b) for polynomials of order $p=5,10,15,20,25$ (note that the number of basis functions is always $N=p+1$).  For each experiment, report the sample error, generalization error, and the largest and smallest singular value of the matrix $\mA$.  Make a plot of the sample error versus $N$ and the generalization error versus $N$.  For what value of $N$ does least-squares start to fall apart and why?  Why does the sample error go down monotonically with $N$ but the generalization error does not?  Answer these questions, and for each value of $p$, make a plot of the sample values, $\widehat{f}(t)$, and $f_{\mathrm{true}}(t)$ overlaid on one another.
+	
+	\item Set $N=25$.  Plot the singular values of $\mA$ for this $N$.  Stabilize your least-squares solution by truncating the SVD; make a judgement call about what $R'$ should be given your singular value plot, and explain your reasoning.  Compute the sample and generalization errors.
+	
+	\item Again with $N=25$, repeat part (d) and compute the truncated SVD estimate for $R'=5,6,\ldots,25$.  Plot the sample and generalization error versus $R'$, and interpret in terms of noise error, approximation error, and null space error.
+	
+	\item Fix $N=25$.  Now we will consider the ridge regression estimate
+	\[
+		\minimize_{\vw} \|\vy-\mA\vw\|_2^2 + \delta\|\vw\|_2^2
+	\]
+	Again examining the plot of the singular values of $\mA$, come up with a reasonable value of $\delta$ to use above.  Perform the regression, make a plot of your result, again overlaid on the samples and $f_{\mathrm{true}}(t)$, and report the sample and generalization error.  Also comment on what happens to both the sample and generalization error as you sweep the value of $\delta$ --- provide representative plots.
+\end{enumerate}
+ 
+%--------------------------------------------------------------------
+\vspace{4mm} 
+\item Let
+\[
+	\mH = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix},
+	\quad
+	\vb = \begin{bmatrix} -1 \\ -3 \end{bmatrix},
+\]
+and let $f:\R^2\rightarrow\R$ be
+\[
+	f(\vx) = \frac{1}{2}\vx^\T\mH\vx - \vb^\T\vx.
+\]	
+\begin{enumerate}
+	\item What is the smallest value that $f$ takes on $\R^2$?  At what $\vx$ does it achieve this minimum value?
+	
+	\item Write $f(\vx)$ out as a quadratic function in $x_1,x_2$ where $\vx = \begin{bmatrix} x_1 \\\ x_2 \end{bmatrix}$.  In other words, fill in the blanks below
+	\[
+		f(\vx) = \underline{\quad}x_1^2 + \underline{\quad}x_2^2 + \underline{\quad}x_1x_2 + \underline{\quad}x_1 + \underline{\quad}x_2.
+	\]
+	
+	\item Using MATLAB or Python, make a contour plot of $f(\vx)$ around its minimizer in $\R^2$.  Compute the eigenvectors and eigenvalues of $\mH$, and discuss what role they are playing in the geometry of your sketch.
+	
+	\item On top of the contour plot, trace out the first four steps of the gradient descent algorithm starting at $\vx_0 =\vzero$.
+	
+	\item On top of the contour plot, trace out the two steps of the conjugate gradient method starting at $\vx=\vzero$.
+\end{enumerate}
+
+%--------------------------------------------------------------------
+\vspace{4mm}
+\item 
+\begin{enumerate}
+
+	\item Write a MATLAB (or Python) function \texttt{gdsolve} that implements the gradient descent algorithm for solving linear systems of equations.  The function should be called as
+	\begin{verbatim}
+		[x, iter] = gdsolve(H, b, tol, maxiter);
+	\end{verbatim}
+	where \texttt{H} is a $N\times N$ symmetric positive definite matrix, \texttt{b} is a vector of length $N$, and \texttt{tol} and 		\texttt{maxiter} specify the halting conditions.  Your algorithm should iterate until $\|\vb - \mH \vx_k\|_2/\|\vb\|_2$ is less than \texttt{tol} or the maximum number of iterations \texttt{maxiter} has been reached.  For the outputs: \texttt{x} is your solution, and \texttt{iter} is the number of iterations that were performed.  Run your code on the $\mH$ and $\vb$ in the file \texttt{hw05p3\_data.mat} for a \texttt{tol} of $10^{-6}$.  Report the number of iterations needed for convergence, and for your solution $\widehat\vx$ verify that $\|\vb - \mH \widehat{\vx}\|_2/\|\vb\|_2$ is within the specified tolerance.
+	
+	\item Write a MATLAB (or Python) function \texttt{cgsolve.m} that implements the conjugate gradient method.  The function should be called as
+\begin{verbatim}
+	[x, iter] = cgsolve(H, b, tol, maxiter);
+\end{verbatim}
+where the inputs and outputs have the same interpretation as in the previous problem.  Run your code on the $\mH$ and $\vb$ in the file \texttt{hw05p3\_data.mat} (same data as in part(a)) for a \texttt{tol} of $10^{-6}$.  Report the number of iterations needed for convergence, and for your solution $\widehat\vx$ verify that $\|\vb - \mH \widehat{\vx}\|_2/\|\vb\|_2$ is within the specified tolerance.  Compare against the gradient descent algorithm in part (a).
+	
+\end{enumerate}
+
+%--------------------------------------------------------------------
+\vspace{4mm} 
+\item  Let $\mA$ be a banded tridiagonal matrix:
+\[
+	\mA = 
+	\begin{bmatrix}
+		d_1 & c_1 & 0 & 0 & 0 & \cdots & 0 \\
+		f_1 & d_2 & c_2 & 0 & 0 & \cdots & 0 \\
+		0 & f_2 & d_3 & c_3 & 0 & \cdots & 0 \\
+		0 & 0 & f_3 & d_4 & c_4 & \cdots & 0 \\
+		\vdots & \vdots & & \ddots & \ddots & \ddots & \vdots \\
+		0 & 0 & \cdots & & f_{N-2} & d_{N-1} & c_{N-1} \\
+		0 & 0 & 0 & \cdots & & f_{N-1} & d_N
+	\end{bmatrix}
+\]
+\begin{enumerate}
+	\item Argue that the LU factorization of $\mA$ has the form
+	\[
+		\mA = 
+		\begin{bmatrix}
+			* & 0 & 0 & 0 & \cdots & 0 \\
+			* & * & 0 & 0 & \cdots & 0 \\
+			0 & * & * & 0 & \cdots & 0 \\
+			0 & 0 & * & * & \cdots & 0 \\
+			\vdots & & & \ddots & \ddots & \vdots  & \\
+			0 & 0 & \cdots & & * & *  
+		\end{bmatrix}
+		\begin{bmatrix}
+			* & * & 0 & 0 & 0 & \cdots & 0 \\
+			0 & * & * & 0 & 0 & \cdots & 0 \\
+			0 & 0 & * & * & 0 & \cdots & 0 \\
+			\vdots & & & & \ddots & \ddots \\
+			0 & 0 & \cdots  & & &  * & * \\
+			0 & 0 &  \cdots & & & 0 & *
+		\end{bmatrix},
+	\]
+	where $*$ signifies a non-zero term.
+	
+	\item Write down an algorithm that computes the LU factorization of $\mA$, meaning the $\{\ell_i\},\{u_i\},$ and $\{g_i\}$ below
+	\[
+		\mA = 
+		\begin{bmatrix}
+			1 & 0 & 0 & 0 & \cdots & 0 \\
+			\ell_1 & 1 & 0 & 0 & \cdots & 0 \\
+			0 & \ell_2 & 1 & 0 & \cdots & 0 \\
+			0 & 0 & \ell_3 & 1 & \cdots & 0 \\
+			\vdots & & & \ddots & \ddots & \vdots  & \\
+			0 & 0 & \cdots & & \ell_{N-1} & 1  \\
+		\end{bmatrix}
+		\begin{bmatrix}
+			u_1 & g_1 & 0 & 0 & 0 & \cdots & 0 \\
+			0 & u_2 & g_2 & 0 & 0 & \cdots & 0 \\
+			0 & 0 & u_3 & g_3 & 0 & \cdots & 0 \\
+			\vdots & & & & \ddots & \ddots \\
+			0 & 0 & \cdots  & & &  u_{N-1} & g_{N-1} \\
+			0 & 0 &  \cdots & & & 0 & u_{N}
+		\end{bmatrix},
+	\]
+	I will get you started:
+	\begin{align*}
+		&u_1 = d_1 \\
+		&\text{for~}k=2,\ldots,N \\
+		&\qquad g_{k-1} = \\
+		&\qquad \ell_{k-1} = \\
+		&\qquad u_k = \\
+		&\text{end}
+	\end{align*}
+
+	\item What is the computational complexity of the algorithm above? (How does the number of computations scale with $N$?)  Once the LU factorization is in hand, how does solving $\mA\vx=\vb$ scale with $N$?
+\end{enumerate}
+
+%--------------------------------------------------------------------
+\vspace{4mm} 
+\item The Gram-Schmidt process is a method for orthonormalizing a set of vectors in an inner product space. The method works as follows: if $\{\va_1,\va_2,\ldots,\va_N\}$ is a set of linearly independent vectors in $\R^M$  (so clearly $N\leq M$) then we can generate a sequence of orthonomal vectors $\{\vq_1,\vq_2,\ldots,\vq_N\}$ such that
+\[
+	\Span\left(\{\va_1,\ldots,\va_N\}\right) = \Span\left(\{\vq_1,\ldots,\vq_N\}\right)
+\]
+using 
+\[
+	\vq_1 = \frac{\va_1}{\|\va_1\|_2}
+\]
+and for $k=2,\ldots,N$:
+\begin{align*}
+	\vw_k &= \va_k - \sum_{\ell=1}^{k-1}\<\va_k,\vq_\ell\>\vq_\ell, \\
+	\vq_k &= \frac{\vw_k}{\|\vw_k\|_2}.
+\end{align*}
+\begin{enumerate}
+
+	\item As a warm-up, find $\vq_1,\vq_2$ and $\vq_3$ when
+	\[
+		\va_1 = \begin{bmatrix} 1 \\ 1 \\ -1 \\ -1 \\ -1\end{bmatrix},
+		\quad
+		\va_2 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1\end{bmatrix},
+		\quad
+		\va_3 = \begin{bmatrix} 1 \\ -1 \\ 1 \\ -1 \\ 1 \end{bmatrix}.
+	\]
+	Feel free to use a computer to do the calculations; just explain what you did in your write-up.
+	
+	\item For $\{\va_1,\va_2,\va_3\}$ and $\{\vq_1,\vq_2,\vq_3\}$ as in part (a), let
+	\[
+		\mA = \begin{bmatrix} | & | & | \\ \va_1 & \va_2 & \va_3 \\ | & | & | \end{bmatrix},
+		\quad
+		\mQ = \begin{bmatrix} | & | & | \\ \vq_1 & \vq_2 & \vq_3 \\ | & | & | \end{bmatrix}.
+	\]
+	Show how we can write $\mA = \mQ\mR$, where $\mR$ is upper triangular.  Do this by explicitly calculating $\mR$.  (Hint: just keep track of your work while doing part (a)).
+	
+	\item Suppose I run the algorithm above on a general $M\times N$ matrix $\mA$ with linearly independent columns (full column rank).  Explain how the Gram-Schmidt algorithm can be interpreted as finding a $M\times N$ matrix $\mQ$ with orthonormal columns and an upper triangular matrix $\mR$ such that $\mA=\mQ\mR$.  Do this by explicitly writing what the entries of $\mR$ are in terms of the quantities that appear in the algorithm.  This is called the {\em QR decomposition} of $\mA$.
+	
+	\item Prove that an upper triangular matrix is invertible if and only if the elements along the diagonal are nonzero.  Using this to show that the linear independence of the columns of $\mA$ implies that all of the entries along the diagonal of $\mR$ will be nonzero?
+	
+	\item Suppose that an $M\times N$ matrix $\mA$ has full column rank.  Show that the solution to the least-squares problem
+	\[
+		\minimize_{\vx\in\R^N}~\|\vy-\mA\vx\|_2^2
+	\]
+	is $\widehat\vx = \mR^{-1}\mQ^\T\vy$, where $\mA=\mQ\mR$ is the QR decomposition of $\mA$.
+	
+	
+\end{enumerate}
+
+
+%--------------------------------------------------------------------
+\end{enumerate}
+\end{document}

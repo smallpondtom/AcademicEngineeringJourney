@@ -1,0 +1,206 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,graphicx,mathrsfs}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{color}
+
+% format and layout
+\parindent = 0 pt
+\parskip = 8 pt 
+\addtolength{\textwidth}{1in}
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\textheight}{1.6in}
+\addtolength{\topmargin}{-0.8in}
+
+% time and date in footer
+\usepackage{scrtime} 
+\usepackage[draft,scrtime]{prelim2e}
+\renewcommand{\PrelimWords}{Last updated \thistime,~\today}
+\renewcommand{\PrelimText}{\textnormal{\tiny\PrelimTextStyle \PrelimWords}}
+
+\graphicspath{{./Figs/}}
+
+%--------------------------------------------------------------------
+
+\input{../../Notes/defs-mfml}
+
+%--------------------------------------------------------------------
+
+\begin{document}
+
+%--------------------------------------------------------------------
+
+\noindent
+{\bf\large Math Foundations of ML, Fall 2022} \\[3mm]
+{\bf\large Homework \#7} \\[3mm]
+{\bf Due Friday December 2 at 5:00pm ET}\\[3mm]
+%{\bf Reading: XXXX}
+
+{\bf As stated in the syllabus, unauthorized use of previous semester course materials is strictly prohibited in this course.}
+
+\begin{enumerate}
+%--------------------------------------------------------------------
+
+\item Three friends, Aaron, Blake, and Colin, meet together every week to play poker.  They each buy in for \$100, and play until one of them has it all.  Poker is a game of skill, but also a game of luck --- the winner each week is modeled as a discrete random variable $X$ with distribution parameterized by $\theta_a$ and $\theta_b$ with 
+\[
+	\P{X=A} = \theta_a,\quad \P{X=B} = \theta_b, \quad \P{X=C} = 1-\theta_a-\theta_b,
+\]
+where
+\begin{equation}
+	\label{eq:pconst}
+	\theta_a,\theta_b\geq 0,\quad\text{and}\quad \theta_a+\theta_b\leq 1.
+\end{equation}
+Above, event $A$ corresponds to Aaron winning, $B$ corresponds to Blake winning, and $C$ corresponds to Colin winning.
+
+The parameters $\theta_a$ and $\theta_b$ are unknown, and we want to infer them after observing the winners each week for many weeks.  We have no idea of the relative skill of the players at the beginning of this experiment, so our prior is uniform on the triangular region specified by the constraints in \eqref{eq:pconst}:
+\[
+	\vtheta = \begin{bmatrix} \theta_a \\ \theta_b \end{bmatrix},
+	\quad
+	f_\Theta(\vtheta) = \begin{cases} 2, & \vtheta\in\setS, \\ 0, & \vtheta\not\in\setS ,\end{cases} 
+	\quad
+	\setS = \left\{\vartheta\in\R^2~:~\vartheta[1],\vartheta[2]\geq 0,~~\vartheta[1]+\vartheta[2]\leq 1\right\}.
+\]
+(You might, at this point, want to sketch the set $\setS$ in $\R^2$.)
+
+\begin{enumerate}
+	\item Show that after $N$ weeks, where we have observed $N_a$ wins for Aaron, $N_b$ wins for Blake, and $N_c = N-N_a-N_b$ wins for Colin, the posterior for $\Theta$ is given by the {\em Dirichlet distribution}
+	\[
+		f_{\Theta}(\vtheta|X_1=x_1,\ldots,X_N=x_n) \propto \theta_a^{N_a}\theta_b^{N_b}(1-\theta_a-\theta_b)^{N-N_a-N_b}.
+	\]
+	(The constant in front of the expression on the right turns out to be
+	\[
+		\frac{\Gamma(N+3)}{\Gamma(N_a+1)\Gamma(N_b+1)\Gamma(N-N_a-N_b+1)},
+	\]
+	which is the inverse of the integral of the expression on the right over the constraint set $\setS$.)
+	
+	\item Using MATLAB (or Python), plot the posterior density if after a year of play, we are at
+	\[
+		N_a = 5,\quad N_b = 32,\quad N_c = 15.
+	\]
+\end{enumerate}
+%--------------------------------------------------------------------
+%--- 
+\vspace{4mm}  
+\item Suppose the random variables $(X,Y)$, $X\in\R^2$, $Y\in\{1,2\}$, have joint distribution given by
+\begin{align*}
+	&\P{Y=1}=\P{Y=2}=1/2,\\
+	&f_X(\vx|Y=k) = \frac{1}{2\pi\sqrt{\det(\mSigma_k)}}\exp\left(-\frac{1}{2}(\vx-\vmu_k)^\T\mSigma_k^{-1}(\vx-\vmu_k)\right),
+\end{align*}
+where
+\[
+	\vmu_1 = \begin{bmatrix} -1 \\ 1 \end{bmatrix}, ~~
+	\vmu_2 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, ~~
+	\mSigma_1 = \begin{bmatrix} 3 & -6 \\ -6 & 24 \end{bmatrix},~~
+	\mSigma_2 = \begin{bmatrix} 16 & -6 \\ -6 & 8 \end{bmatrix}.
+\]
+Draw the regions $\Gamma_1(h^*)$ and $\Gamma_2(h^*)$ that correspond to the Bayes classifier.  (You can feel free to use MATLAB or Python for this.)
+
+%--- 
+\vspace{4mm} 
+\item 
+\begin{enumerate}
+	\item The file \texttt{hw07p3data} contains two arrays: \texttt{X1} and \texttt{X2}.  These are samples from an unknown distribution, where \texttt{X1} has been assigned ``class 1'', and \texttt{X2} has been assigned ``class 2''.  Implement the nearest neighbor algorithm, and sketch the decision regions $\Gamma_1$ and $\Gamma_2$ that it defines.
+
+	\item Actually, the data in part (a) was generated using the model from Problem 2.  Estimate the generalization error $R(h)$ for both the Bayes classifier (Problem 2) and the nearest-neighbor rule (part (a)), and compare the two.  This will require the generation of many Gaussian random vectors with specified covariance matrices.
+
+\end{enumerate}
+
+%--- 
+\vspace{4mm} 
+\item Let $X_1,X_2,\ldots$ be independent Gaussian random variables with mean $0$ and variance $1$.  Let
+	\[
+		Z_M = \max_{1\leq m\leq M} |X_m|.
+	\]
+	\begin{enumerate}
+		\item Using Monte Carlo simulation, estimate $\E[Z_M]$ for $$M=1,2,5,10,20,50,100,\ldots,10^5,2\cdot 10^5,5\cdot 10^5, 10^6.$$  Turn in a plot of $\E[Z_M]$ versus $M$ on appropriately scaled (log) axes.
+		
+		\item Prove that
+		\begin{equation}
+			\label{eq:gausstail}
+			\frac{1}{\sqrt{2\pi}}\int_u^\infty\e^{-t^2/2}~\d{t} ~\leq~ \frac{1}{2}\e^{-u^2/2},
+		\end{equation}
+		and so
+		\[
+			\P{|X_m| > u}~\leq~ \min\left(1, \e^{-u^2/2}\right).
+		\]
+		Using this and the Boole inequality, find a bound on $\P{Z_M > u}$.
+		
+		\item Prove that if $Z$ is a positive-valued random variable, then
+		\[
+			\E[Z] = \int_{0}^\infty \P{Z>u}~\d{u}.
+		\]
+		Use this along with your answer to part (b) to get an analytical upper bound on $\E[Z_M]$.  Note that if $f(u)$ is a positive monotonically decreasing function, then
+		\[
+			\int_{0}^\infty \min\left(1,f(u)\right)~\d{u} = \gamma + \int_{\gamma}^\infty f(u)~\d{u},
+		\]
+		where $\gamma$ is the point where $f(\gamma)=1$. 
+	\end{enumerate}
+
+%--------------------------------------------------------------------
+\vspace{4mm} 
+\item Suppose that the coupled random variables $(X,Y)\in\R\times\{0,1\}$ have joint distribution specified by
+	\[
+		\P{Y=0} = 0.4, \quad X|Y=0\sim\mathrm{Normal}(-1,4),\quad X|Y=1\sim\mathrm{Normal}(1,4).
+	\]
+	We will consider the following set of classifiers for predicting $Y$ from an observation of $X$:
+	\[
+		\setH = \big \{h_\theta(x),\,\theta\in[-10,10] \big \},
+		\quad\text{where}\quad
+		h_\theta(x) = 
+		\begin{cases}
+			0, & x < \theta, \\ 1, & x\geq\theta.
+		\end{cases}
+	\]
+	In this case, because we have been told the distribution, we can compute the true risk for every $h_\theta\in\setH$:
+	\begin{equation}
+		\label{eq:riskcalc}
+		R(h_\theta) = \P{Y=1}\int_{-\infty}^\theta f_{X}(x|Y=1)\d{x} ~+~ \P{Y=0}\int_\theta^\infty f_{X}(x|Y=0)\d{x}.
+	\end{equation}
+	(In MATLAB/Python, you can compute the above with the help of the \texttt{normcdf}/\texttt{norm.cdf} command.)
+	
+\begin{enumerate}
+	
+	\item   Write code that generates $N$ (independent) realizations of $(X,Y)$ then plots the empirical risk function $\hat{R}_N(h_\theta)$ overlaid on top of $R(h_\theta)$.  Turn in plots of three realizations each for $N=10,100,1000$.  These plots should have a horizontal axis indexed by $\theta\in[-10,10]$ (and this interval should be discretized to $1000$ points).
+	
+	\item Using Monte Carlo simulation, estimate $\E[|R(h_\theta)-\hat{R}_N(h_\theta)|]$ for the particular case of $\theta = 0.45$ and $N=10,100,1000$.  Here, the expectation is with respect to the draw of the data.  For a fixed $N$, a single experiment consists of drawing $x_1,\ldots,x_N$, computing $\hat{R}_N(h_{0.45})$, and then $|R(h_{0.45})-\hat{R}_N(h_{0.45})|$ (the quantity $R(h_{0.45})$ is deterministic).  Run this experiment many times and average the results to get your estimate.  Then repeat for the other values of $N$.
+	
+	\item Using Monte Carlo simulation, estimate 
+	\[
+		\E\left[\max_{h_\theta\in\setH}|R(h_\theta)-\hat{R}_N(h_\theta)|\right]
+	\]
+	for $N=10,100,1000$.  As above, the expectation is with respect to the random draw of the data $x_1,\ldots,x_N$, so your simulation framework should be similar.  The main difference is that every experiment produces a random {\em function} $\hat{R}_N(h_\theta)$ of $\theta$ that is compared against the deterministic function $R(h_\theta)$.  You can compute the $\max$ by gridding the $\theta$ axis at sufficiently many points.
+	
+	\item Using Monte Carlo simulation, estimate the average performance (generalization error) $\E[R(\hat{h}_N)]$ of the empirical risk minimizer
+	\[
+		\hat{h}_N = \argmin_{h_\theta\in\setH} \hat{R}_N(h_\theta),
+	\]
+	for $N=10,100,1000$.  (You again need simulations as above to generate the $\hat{h}_N$ --- given the minimizer, computing $R(\hat{h}_N)$ can be done with \eqref{eq:riskcalc}.)  As before, $\hat{h}_N$ is a random classification rule (because of the randomness of the data), and so $R(\hat{h}_N)$ is a random number, even though $R(\cdot)$ is a deterministic function.  Compare your estimate of $\E[R(\hat{h}_N)]$ to the risk of the Bayes classifier $R(h_{\mathrm{bayes}})$, where as usual
+	\[
+		h_{\mathrm{bayes}} = \argmin_{h_\theta\in\setH} R(h_\theta).
+	\]
+\end{enumerate}
+
+
+%--- 
+\vspace{4mm} 
+\item 
+\begin{enumerate}
+	\item Compute the gradient (with respect to $\vw$) of
+	\[
+		-\ell(\vw;\vx_n,y_n) = 
+		-y_n\log(\sigma(\vw^\T\mPsi(\vx_n))) - (1-y_n)\log(1-\sigma(\vw^\T\mPsi(\vx_n))) 
+	\]
+
+	\item The file \texttt{hw07p6data.mat} contains a $2\times 1000$ matrix \texttt{X} and a $1\times 1000$ binary-valued vector \texttt{Y}.  Interpret the columns of \texttt{X} as data points $\vx_n\in\R^2$ and the corresponding entry of \texttt{Y} as a class label $y_n\in\{0,1\}$.  Implement gradient descent\footnote{You should be able to get gradient descent to converge with a small enough fixed step size.} to fit a conditional probability function to the data.  For the function space $\setF$, use the space of all polynomials of degree 2, that is
+	\[
+		\mPsi(\vx) = 
+		\begin{bmatrix}
+			x_1^2 \\ x_2^2 \\ x_1x_2 \\ x_1 \\ x_2 \\ 1	
+		\end{bmatrix}.
+	\]
+	Plot the resulting conditional probability function $p(\vx)$ and the corresponding classification regions.  Turn in these plots along with your code.
+\end{enumerate}
+
+%--------------------------------------------------------------------
+\end{enumerate}
+\end{document}

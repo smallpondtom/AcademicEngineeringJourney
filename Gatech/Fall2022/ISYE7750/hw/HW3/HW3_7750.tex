@@ -1,0 +1,179 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{color}
+
+% format and layout
+\parindent = 0 pt
+\parskip = 8 pt 
+\addtolength{\textwidth}{1in}
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\textheight}{1.6in}
+\addtolength{\topmargin}{-0.8in}
+
+% time and date in footer
+\usepackage{scrtime} 
+\usepackage[draft,scrtime]{prelim2e}
+\renewcommand{\PrelimWords}{Last updated \thistime,~\today}
+\renewcommand{\PrelimText}{\textnormal{\tiny\PrelimTextStyle \PrelimWords}}
+
+\graphicspath{{./Figs/}}
+
+%--------------------------------------------------------------------
+
+\input{defs-mfml}
+
+%--------------------------------------------------------------------
+
+\begin{document}
+
+%--------------------------------------------------------------------
+
+\noindent
+{\bf\large Math Foundations of ML, Fall 2022} \hspace{2cm} {\bf\large Instructor: Justin Romberg} \\[3mm]
+{\bf Homework 3} \\[3mm]
+{\bf Due: Friday, October 7, 2022 at 5:00 pm EST}\\[3mm]
+%{\bf Reading: XXXX}
+
+{\bf As stated in the syllabus, unauthorized use of previous semester course materials is strictly prohibited in this course.}
+
+\begin{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+%--------------------------------------------------------------------
+\vspace{4mm} 
+\item The file \texttt{hw3p1\_data.mat} contains two variables: \texttt{udata} and \texttt{ydata}.  We will use this data to estimate a function $f:\R^2\rightarrow\R$.  The columns of \texttt{udata} contain sample locations, of which there are $M=100$.  The entries of $\vy$ are the corresponding responses.  We want to estimate $f$ such that
+\[
+	f(\vu_m)\approx y_m,\quad m = 1,\ldots,M, \quad\text{where}\quad \vu_m = \begin{bmatrix} s_m \\ t_m \end{bmatrix}.
+\]
+We will restrict $f$ to be a second-order polynomial on $[0,1]\times[0,1]$:
+\begin{equation}
+	\label{eq:secondorderpoly}
+	f(s,t) = \alpha_1s^2 + \alpha_2t^2 + \alpha_3st + \alpha_4s + \alpha_5t + \alpha_6,
+\end{equation}
+which means that $f$ lies in a six dimensional subspace of $L_2([0,1]^2)$.
+\begin{enumerate}
+	\item Explain how to compute the $100\times 6$ matrix $\mA$ so that $\vy\approx\mA\valpha$, where $\vy$ contains the $100$ response values in \texttt{ydata}.  Write the code to compute $\mA$ and turn it in.
+	\item Solve 
+	\[
+		\minimize_{\valpha\in\R^6}~\|\vy-\mA\valpha\|_2^2.
+	\] 
+	Turn in your code and the numerical value of your solution $\hat\valpha\in\R^6$.
+	\item Make a contour plot of the corresponding 
+	\[
+		\hat{f}(s,t) =  \hat\alpha_1s^2 + \hat\alpha_2t^2 + \hat\alpha_3st + \hat\alpha_4s + \hat\alpha_5t + \hat\alpha_6.
+	\]
+	Include 50 contour lines, just so we have a very clear picture of what this function looks like.
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+%--------------------------------------------------------------------
+\vspace{4mm} 
+\item Consider the space $\setP_2$ of  second-order polynomials on $[0,1]^2$ specified by $\valpha\in\R^6$ as in \eqref{eq:secondorderpoly} above.
+\begin{enumerate}
+
+	\item At every point $(s,t)$, the gradient $\nabla f(s,t)$ of a function $f \in \setP_2$  is a vector in $\R^2$.  As every $f \in \setP_2$ is specified by a vector $\valpha\in\R^6$, we can think of the gradient at $(s,t)$ as a mapping from $\R^6$ to $\R^2$.  Show that this mapping is linear, which means, for a specified $(s,t)$, there is a $2\times 6$ matrix $\mG_{s,t} \in \mathbb{R}^{2 \times 6}$ such that
+	\[
+		\nabla f(s,t) = \mG_{s,t}\valpha
+	\]
+	
+	\item Find the $6\times 6$ matrix $\mH_{s,t} \in \mathbb{R}^{6 \times 6}$ such that\footnote{Hint: $\|\mG_{s,t}\valpha\|_2^2 = \<\mG_{s,t}\valpha,\mG_{s,t}\valpha\> = \cdots$.}
+	\[
+		\|\nabla f(s,t)\|_2^2 = \valpha^\T \mH_{s,t}\valpha.
+	\]
+	What kinds of functions $f$ are in the null space of $\mH_{s,t}$ for all $s$ and $t$?  Why?
+	
+	\item Compute the matrix 
+	\[
+		\mQ = \int_{0}^1\int_0^1 \mH_{s,t} \ \d{s} \ \d{t}.
+	\]
+	(This is done simply by integrating each entry individually.)
+	
+	\item Describe how to set up and solve the optimization program
+	\[
+		\minimize_{\vf\in\setP_2}\sum_{m=1}^M(y_m - f(s_m,t_m))^2 + \delta \int_0^1\int_0^1\|\nabla f(s,t)\|_2^2\,\d{s}\d{t}.
+	\]
+	What is the regularizer above penalizing?  What kinds of solutions do we expect for large $\delta$?
+	
+	\item Apply your answer to part (d) to the data set from Problem 1.  Play around with the value of $\delta$, and produce estimates for three different $\delta$ that are interesting.  Discuss why you think those values are indeed ``interesting''.
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%--------------------------------------------------------------------
+\vspace{4mm} 
+\item  Let $\mA$ be an $M\times N$ matrix with $\rank(\mA) < N$.  We have seen in this case that the least-squares problem
+\begin{equation}
+	\label{eq:ls}
+	\minimize_{\vx\in\R^N} \|\vy-\mA\vx\|_2^2
+\end{equation}
+has an infinite number of solutions.  We have also seen, however, that the regularized least squares problem
+\begin{equation}
+	\label{eq:tikreg}
+	\minimize_{\vx\in\R^N}\|\vy-\mA\vx\|_2^2 + \delta\|\vx\|_2^2
+\end{equation}
+has a unique solution for every $\delta > 0$.  In this problem, we will show that as $\delta\rightarrow 0$, the regularized solution goes to the minimum norm solution of
+\begin{equation}
+	\label{eq:minnorm}
+	\minimize_{\vx\in\R^N}\|\vx\|_2^2\quad\text{subject to}\quad \mA^\T\mA\vx = \mA^\T\vy.
+\end{equation}
+\begin{enumerate}
+	\item Start by showing that if $\vx_1\in\Row(\mA)$ and $\vx_2\in\Row(\mA)$ then $\mA^\T\mA\vx_1\not=\mA^\T\mA\vx_2$ unless $\vx_1=\vx_2$.
+	\item Use part (a) to argue that the solution to \eqref{eq:minnorm} is always unique.
+	\item In fact, something stronger than what we showed in part (a) is true. 	
+	
+	There exists a constant $C>0$ such that
+	\[
+		\|\mA^\T\mA(\vx_1-\vx_2)\|_2 ~\geq~ C\|\vx_1-\vx_2\|_2\quad\text{for all}\quad \vx_1,\vx_2\in\Row(\mA).
+	\]
+	(This follows very easily from work we do later in the course, so we will defer its proof for now.)  Use this fact to show that the solution of \eqref{eq:tikreg} goes to the solution of \eqref{eq:minnorm} as $\delta\rightarrow 0$.  In particular, if $\vx^\star$ is the (always unique) minimizer of \eqref{eq:minnorm}, and $\hat\vx_n$ is the (always unique) minimizer of \eqref{eq:tikreg} with\footnote{There is nothing special about taking $\delta=1/n$ ... your argument should work for any sequence of $\delta$s that goes to zero.} $\delta = 1/n$, show that
+\[
+	\lim_{n\rightarrow\infty}\hat\vx_n = \vx^\star,
+\]
+i.e.\ $\lim_{n\rightarrow\infty}\|\vx^\star-\hat\vx_n\|_2 = 0$.
+\end{enumerate}
+	
+
+
+
+
+
+\end{enumerate}
+\end{document}

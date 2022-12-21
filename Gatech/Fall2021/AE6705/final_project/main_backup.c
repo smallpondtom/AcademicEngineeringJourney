@@ -1,0 +1,579 @@
+/*
+ * AE6705 Final Project main.c file
+ * Author: Tomoki Koike
+ * Last Edited:
+ */
+
+#include <assert.h>
+#include <driverlib.h>
+#include <msp.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+// MACROS
+#define DEBUG
+#define PWM_PERIOD 3000
+#define TIMER_PERIOD 15000 // 200 Hz
+#define Fdco 3E+6          // DCO frequency 3 MHz
+#define DT 0.01            // time step of controller (100 Hz)
+
+// PID GAIN STURCTURE
+struct PID_controller {
+  float Kp, Ki, Kd, T, UMIN, UMAX;
+};
+
+// CONTROL STATES
+struct control_states {
+  float error, lastError, dterm, iterm, out;
+};
+
+// GLOBAL VARIABLES
+const float omega_base = 80;
+const float center = 3500;
+const struct PID_controller motor_control = {
+    0.110700572033852,
+    1.47108759375333,
+    2.58168905995464e-12,
+    DT,
+    0, // lower bound of the duty cycle saturation
+    1  // upper bound of the duty cycle saturation
+};
+const struct PID_controller position_control = {
+    0.0, 0.0, 0.0, DT,
+    0, // min of 0 RPM correction
+    20 // max of 20 RPM correction
+};
+static const struct control_states EmptyStruct; // an empty structure
+
+// VOLATILE VARIABLES
+volatile uint16_t fallingEdge_right = 0;     // right motor
+volatile uint16_t lastFallingEdge_right = 0; // right motor
+volatile uint16_t fallingEdge_left = 0;      // left motor
+volatile uint16_t lastFallingEdge_left = 0;  // left motor
+volatile bool motor_on = false;
+volatile float dutyCycle_right = 0.0; // right motor
+volatile float dutyCycle_left = 0.0;  // left motor
+volatile struct control_states rpm_control = {0.0, 0.0, 0.0, 0.0,
+                                              0.0}; // outer loop PID
+volatile struct control_states right_motor = {0.0, 0.0, 0.0, 0.0,
+                                              0.0}; // right motor PID
+volatile struct control_states left_motor = {0.0, 0.0, 0.0, 0.0,
+                                             0.0}; // left motor PID
+volatile float omega_c = 0.0;                      // RPM correction
+volatile float omega_right_d = 0.0;                // right motor desired RPM
+volatile float omega_left_d = 0.0;                 // left motor desired RPM
+volatile float omega_right = 0.0;                  // right motor RPM
+volatile float omega_left = 0.0;                   // left motor RPM
+volatile int position = 3500;  // position measurement from QTRX
+volatile int ct = 0;           // counter for sensor
+volatile int sensor_input = 0; // sensor readings
+volatile int high_ct = 0;      // number of high readings
+
+// MSP432 STRUCTURES
+// Timer_A0 and Timer_A2: TA0.1, TA0.2, TA0.3, TA0.4, TA2.1, TA2.2
+const Timer_A_UpModeConfig timer_config = {TIMER_A_CLOCKSOURCE_SMCLK,
+                                           TIMER_A_CLOCKSOURCE_DIVIDER_1,
+                                           TIMER_PERIOD,
+                                           TIMER_A_TAIE_INTERRUPT_DISABLE,
+                                           TIMER_A_CCIE_CCR0_INTERRUPT_DISABLE,
+                                           TIMER_A_DO_CLEAR};
+
+// Timer_A1 (controller): TA1.0
+const Timer_A_UpModeConfig timer_config_control = {
+    // Timer A1.0 configurations
+    TIMER_A_CLOCKSOURCE_SMCLK,
+    TIMER_A_CLOCKSOURCE_DIVIDER_1,
+    30000, // 100 Hz for controller
+    TIMER_A_TAIE_INTERRUPT_DISABLE,
+    TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE,
+    TIMER_A_DO_CLEAR};
+
+// PWM signal 1 (right motor): TA0.1
+const Timer_A_PWMConfig pwmConfig_TA01 = {
+    TIMER_A_CLOCKSOURCE_SMCLK,
+    TIMER_A_CLOCKSOURCE_DIVIDER_1,
+    PWM_PERIOD,                        // 1 ms period (3000)
+    TIMER_A_CAPTURECOMPARE_REGISTER_1, // REG1
+    TIMER_A_OUTPUTMODE_RESET_SET,
+    0, // default of 0 duty cycle
+};
+
+// PWM signal 2 (right motor): TA0.2
+const Timer_A_PWMConfig pwmConfig_TA02 = {
+    TIMER_A_CLOCKSOURCE_SMCLK,
+    TIMER_A_CLOCKSOURCE_DIVIDER_1,
+    PWM_PERIOD,                        // 1 ms period (3000)
+    TIMER_A_CAPTURECOMPARE_REGISTER_2, // REG2
+    TIMER_A_OUTPUTMODE_RESET_SET,
+    0, // default of 0 duty cycle
+};
+
+// PWM signal 3 (left motor): TA0.3
+const Timer_A_PWMConfig pwmConfig_TA03 = {
+    TIMER_A_CLOCKSOURCE_SMCLK,
+    TIMER_A_CLOCKSOURCE_DIVIDER_1,
+    PWM_PERIOD,                        // 1 ms period (3000)
+    TIMER_A_CAPTURECOMPARE_REGISTER_3, // REG3
+    TIMER_A_OUTPUTMODE_RESET_SET,
+    0, // default of 0 duty cycle
+};
+
+// PWM signal 4 (left motor): TA0.4
+const Timer_A_PWMConfig pwmConfig_TA04 = {
+    TIMER_A_CLOCKSOURCE_SMCLK,
+    TIMER_A_CLOCKSOURCE_DIVIDER_1,
+    PWM_PERIOD,                        // 1 ms period (3000)
+    TIMER_A_CAPTURECOMPARE_REGISTER_4, // REG4
+    TIMER_A_OUTPUTMODE_RESET_SET,
+    0, // default of 0 duty cycle
+};
+
+// Timer_A2.1 Capture Compare
+const Timer_A_CaptureModeConfig captureConfig_TA21 = {
+    TIMER_A_CAPTURECOMPARE_REGISTER_1,       TIMER_A_CAPTUREMODE_FALLING_EDGE,
+    TIMER_A_CAPTURE_INPUTSELECT_CCIxA,       TIMER_A_CAPTURE_SYNCHRONOUS,
+    TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE, TIMER_A_OUTPUTMODE_OUTBITVALUE};
+
+// Timer_A2.2 Capture Compare
+const Timer_A_CaptureModeConfig captureConfig_TA22 = {
+    TIMER_A_CAPTURECOMPARE_REGISTER_2,       TIMER_A_CAPTUREMODE_FALLING_EDGE,
+    TIMER_A_CAPTURE_INPUTSELECT_CCIxA,       TIMER_A_CAPTURE_SYNCHRONOUS,
+    TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE, TIMER_A_OUTPUTMODE_OUTBITVALUE};
+
+/*
+ * Function: signum
+ * -----------------
+ * Compute the signum from value.
+ *
+ * Arguments:
+ *   [float] x: Value to evaluate.
+ * Returns:
+ *   [int] -1, 0, or 1.
+ */
+int signum(float x) {
+  int y = (x > 0) ? 1 : ((x < 0) ? -1 : 0);
+  return y;
+}
+
+/*
+ * Function: PID_control
+ * ----------------------
+ * Compute the control output from motor velocity error with PID controller
+ *
+ * Arguments:
+ *   [float] val: input value.
+ *   [float] val_d: reference/desired value.
+ *   [struct] *states: states and the control value.
+ *   [struct] *controller: PID gains and time steps.
+ * Returns: None (two structures are passed by address)
+ */
+void PID_control(float val, float val_d, volatile struct control_states *states,
+                 const struct PID_controller *controller) {
+  // Compute error between desired and actual motor velocity
+  states->error = val_d - val;
+
+  // Compute derivative error
+  states->dterm =
+      (states->error - states->lastError) / controller->T * controller->Kd;
+
+  // Compute temporary integral error
+  states->iterm += controller->Ki * controller->T * states->error;
+
+  // Compute the candidate PID control
+  states->out = controller->Kp * states->error + states->iterm + states->dterm;
+
+  float u = states->out;
+  // Clamping anti-windup:
+  if (u > controller->UMAX) {
+    states->iterm -= u - controller->UMAX;
+    states->out = controller->UMAX;
+  } else if (u < controller->UMIN) {
+    states->iterm += controller->UMIN - u;
+    states->out = controller->UMIN;
+  }
+
+  // Update the last error
+  states->lastError = states->error;
+}
+
+/*
+ * Function: run_motor
+ * --------------------------
+ * Rotate the motor with a updated rate of duty cycle of the PWM signal to run
+ * right and left motors.
+ *
+ * Arguments: None
+ * Returns: None
+ */
+void run_motor() {
+  // Clockwise rotation for RIGHT motor
+  TA0CCR1 = (uint16_t)(PWM_PERIOD * dutyCycle_right);
+  TA0CCR2 = 0;
+  // Counter clockwise rotation for LEFT motor
+  TA0CCR3 = 0;
+  TA0CCR4 = (uint16_t)(PWM_PERIOD * dutyCycle_left);
+}
+
+/*
+ * Function: stop_motor
+ * ---------------------
+ * Stop the motor.
+ *
+ * Arguments: None
+ * Returns: None
+ */
+void stop_motor() {
+  // Initialize PWM signals as zero
+  TA0CCR1 = 0;
+  TA0CCR2 = 0;
+  TA0CCR3 = 0;
+  TA0CCR4 = 0;
+}
+
+/*
+ * Function: count2rpm
+ * --------------------
+ * Convert falling edge count to physical RPM value
+ *
+ * Arguments:
+ *   [uint16_t] val1: Starting falling edge count.
+ *   [uint16_t] val2: Ending falling edge count.
+ * Returns:
+ *   [float] Physical RPM value.
+ */
+float count2rpm(uint16_t val1, uint16_t val2) {
+  float rpm, period;
+  val2 = (val2 < val1) ? (val2 + TIMER_PERIOD) : val2;
+  period = (val2 - val1) * 3.3333e-7;
+  rpm = (float)(60 / (360 * period));
+  return rpm;
+}
+
+/*
+ * Function <ISR>: TA1_0_IRQHandler
+ * --------------------------
+ * ISR for Timer A1.0. Get the sensor readings and update the dutyCycle with PID
+ * controller for both motors and also run the PID controller to compute
+ * reference angular velocities at 1000 Hz split into 100 Hz.
+ *
+ * Arguments: None
+ * Returns: None
+ */
+void TA1_0_IRQHandler() {
+  if (motor_on) {
+    // Sensor update rate at 1 kHz
+    switch (ct % 10) {
+    case 0:
+      // Set the I/O pins to outputs and drive them high
+      MAP_GPIO_setAsOutputPin(GPIO_PORT_P4,
+                              GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3);
+      MAP_GPIO_setAsOutputPin(GPIO_PORT_P4,
+                              GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+      MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN0 | GPIO_PIN1 |
+                                                    GPIO_PIN2 | GPIO_PIN3);
+      MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4 | GPIO_PIN5 |
+                                                    GPIO_PIN6 | GPIO_PIN7);
+      break;
+
+    case 1:
+      // Set the I/O pins to inputs
+      MAP_GPIO_setAsInputPin(GPIO_PORT_P4,
+                             GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3);
+      MAP_GPIO_setAsInputPin(GPIO_PORT_P4,
+                             GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+
+      // reset sensor inputs and count
+      sensor_input = 0;
+      high_ct = 0;
+      break;
+
+    case 2:
+      // Check the sensors; outputs, a LOW level indicates high reflectance
+      // (white), and a HIGH level indicates a low reflectance (black) on
+      // sensor.
+      high_ct += MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN0);
+      sensor_input += 0 * MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN0);
+
+      high_ct += MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN1);
+      sensor_input += 1 * MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN1);
+
+      high_ct += MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN2);
+      sensor_input += 2 * MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN2);
+
+      high_ct += MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN3);
+      sensor_input += 3 * MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN3);
+
+      high_ct += MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN4);
+      sensor_input += 4 * MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN4);
+
+      high_ct += MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN5);
+      sensor_input += 5 * MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN5);
+
+      high_ct += MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN6);
+      sensor_input += 6 * MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN6);
+
+      high_ct += MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN7);
+      sensor_input += 7 * MAP_GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN7);
+
+      // Compute the position from these readings
+      if (high_ct == 0) { // 0 division -> not on track any longer
+        // turn on red LED for error
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN0);
+      }
+      position = 1000 * (sensor_input / high_ct);
+
+      break;
+
+    case 3:
+      // controls
+      // Outer loop PID control
+      PID_control(position, center, &rpm_control, &position_control);
+      omega_c = rpm_control.out;
+
+      // Update reference RPMs based on the position error and correction RPM
+      if (center - position > 0) { // turn left
+        omega_right_d = omega_base + omega_c;
+        omega_left_d = omega_base - omega_c;
+      } else if (center - position < 0) { // turn right
+        omega_right_d = omega_base - omega_c;
+        omega_left_d = omega_base + omega_c;
+      } else { // straight
+        omega_right_d = omega_base;
+        omega_left_d = omega_base;
+      }
+
+      // Compute the controlled duty cycles from the PID controller
+      // Right motor
+      PID_control(omega_right, omega_right_d, &right_motor, &motor_control);
+      dutyCycle_right = right_motor.out;
+      // Left motor
+      PID_control(omega_left, omega_left_d, &left_motor, &motor_control);
+      dutyCycle_left = left_motor.out;
+
+      break;
+    }
+
+    ct++; // increment counter
+    ct =
+        (ct > 100) ? (ct % 100) : ct; // reset it to 0-100 once it surpasses 100
+  }
+
+  // Clear interrupt flag (VERY IMPORTANT)
+  MAP_Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
+                                           TIMER_A_CAPTURECOMPARE_REGISTER_0);
+}
+
+/*
+ * Function <ISR>: TA2_N_IRQHandler
+ * ---------------------------------
+ * ISR of Timer A2.1 and A2.2 to detect falling edge of motor encoder signal for
+ * both right and left motors.
+ *
+ * Arguments: None
+ * Returns: None
+ */
+void TA2_N_IRQHandler() {
+  // Obtain count
+  fallingEdge_right = Timer_A_getCaptureCompareCount(
+      TIMER_A2_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_1);
+  fallingEdge_left = Timer_A_getCaptureCompareCount(
+      TIMER_A2_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_2);
+
+  // Convert to RPM
+  omega_right = count2rpm(lastFallingEdge_right, fallingEdge_right);
+  omega_left = count2rpm(lastFallingEdge_left, fallingEdge_left);
+
+  lastFallingEdge_right = fallingEdge_right;
+  lastFallingEdge_left = fallingEdge_left;
+
+  // Clear interrupt flag (VERY IMPORTANT)
+  MAP_Timer_A_clearCaptureCompareInterrupt(TIMER_A2_BASE,
+                                           TIMER_A_CAPTURECOMPARE_REGISTER_1);
+  MAP_Timer_A_clearCaptureCompareInterrupt(TIMER_A2_BASE,
+                                           TIMER_A_CAPTURECOMPARE_REGISTER_2);
+}
+
+/*
+ * Function: resetParams
+ * ----------------------
+ * Reset all the parameters updated after running robot.
+ *
+ * Arguments: None
+ * Returns: None
+ */
+void resetParams() {
+  fallingEdge_right = 0;
+  fallingEdge_left = 0;
+  lastFallingEdge_right = 0;
+  lastFallingEdge_left = 0;
+  dutyCycle_right = 0.0;
+  dutyCycle_left = 0.0;
+  rpm_control = EmptyStruct; // outer loop PID
+  right_motor = EmptyStruct; // right motor PID
+  left_motor = EmptyStruct;  // left motor PID
+  omega_c = 0.0;             // RPM correction
+  omega_right_d = 0.0;       // desired right motor RPM
+  omega_left_d = 0.0;        // desired left motor RPM
+  omega_right = 0.0;         // right motor RPM
+  omega_left = 0.0;          // left motor RPM
+  position = 3500;           // position measurement from QTRX
+  ct = 0;
+  sensor_input = 0;
+  high_ct = 0;
+
+  TA0CCR1 = 0;
+  TA0CCR2 = 0;
+  TA0CCR3 = 0;
+  TA0CCR4 = 0;
+}
+
+void PORT1_IRQHandler() {
+  // Tell which switch was pressed
+  uint16_t whichSwitch = MAP_GPIO_getEnabledInterruptStatus(GPIO_PORT_P1);
+
+  if (GPIO_PIN1 == whichSwitch) { // switch 1 -> turn motor on and off
+    if (!motor_on) {
+      MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); // turn blue LED on
+      motor_on = true;
+    } else {
+      MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2); // turn blue LED off
+      motor_on = false;
+    }
+  } else if (GPIO_PIN4 == whichSwitch) { // switch 2 -> reset parameters
+    resetParams();
+  }
+
+  // Clear interrupt flag
+  MAP_GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4);
+}
+
+/*
+ * Function: setup_GPIO
+ * ----------------------
+ * Configure GPIO.
+ *
+ * Arguments: None
+ * Returns: None
+ */
+void setup_GPIO() {
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- LEDs
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  MAP_GPIO_setAsOutputPin(GPIO_PORT_P1,
+                          GPIO_PIN0); // set LED1 (red) as output pin
+  MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P1,
+                             GPIO_PIN0); // set initial state to off
+  MAP_GPIO_setAsOutputPin(GPIO_PORT_P2,
+                          GPIO_PIN2); // set LED2 (blue) as output pin
+  MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P2,
+                             GPIO_PIN2); // set initial state to off
+
+  // Set switch 1 (S1) as input button (connected to P1.1)
+  MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
+  // Set switch 2 (S2) as input button (connected to P1.4)
+  MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN4);
+
+  // Setup interrupts
+  // S1) turn on/off the robot
+  // S2) reset the variables or parameters
+  MAP_GPIO_interruptEdgeSelect(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4,
+                               GPIO_HIGH_TO_LOW_TRANSITION);
+  MAP_GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4);
+  MAP_Interrupt_enableInterrupt(INT_PORT1);
+}
+
+/*
+ * Function: setup_timer
+ * ----------------------
+ * Configure clock and Timer A0.1 ~ A0.4, A1.0, and A2.1 ~ A2.2
+ *
+ * Arguments: None
+ * Returns: None
+ */
+void setup_timer() {
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- CLOCK
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  unsigned int dcoFreq = Fdco;     // variable for DCO frequency
+  MAP_CS_setDCOFrequency(dcoFreq); // setting DCO frequency
+  MAP_CS_initClockSignal(CS_SMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
+
+  // TIMER 0, TIMER 1, and TIMER 2 (! All should be configured correctly)
+  // One for PWM and one for capture mode
+  MAP_Timer_A_configureUpMode(TIMER_A0_BASE,
+                              &timer_config); // configure timer A0
+  MAP_Timer_A_configureUpMode(TIMER_A1_BASE,
+                              &timer_config_control); // configure timer A1
+  MAP_Timer_A_configureUpMode(TIMER_A2_BASE,
+                              &timer_config); // configure timer A2
+
+  // Timer_A2.1 and Timer_A2.2
+  MAP_GPIO_setAsPeripheralModuleFunctionInputPin(
+      GPIO_PORT_P5, GPIO_PIN6 | GPIO_PIN7,
+      GPIO_PRIMARY_MODULE_FUNCTION); // enable the GPIO PIN as Timer A2.1 and
+                                     // A2.2
+
+  // Configure Timer A2.1 and A2.2 as Capture mode Interrupt
+  MAP_Timer_A_initCapture(TIMER_A2_BASE, &captureConfig_TA21);
+  MAP_Timer_A_initCapture(TIMER_A2_BASE, &captureConfig_TA22);
+  MAP_Timer_A_enableCaptureCompareInterrupt(TIMER_A2_BASE,
+                                            TIMER_A_CAPTURECOMPARE_REGISTER_1);
+  MAP_Timer_A_enableCaptureCompareInterrupt(TIMER_A2_BASE,
+                                            TIMER_A_CAPTURECOMPARE_REGISTER_2);
+  MAP_Interrupt_enableInterrupt(INT_TA2_N);
+
+  // Timer A1.0 for controller
+  MAP_GPIO_setAsPeripheralModuleFunctionOutputPin(
+      GPIO_PORT_P8, GPIO_PIN0,
+      GPIO_SECONDARY_MODULE_FUNCTION); // enable the GPIO PIN8.0 as Timer A1.0
+  MAP_Interrupt_enableInterrupt(
+      INT_TA1_0); // configure timer A1.0 interrupt for control
+
+  // Start all counters
+  MAP_Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_UP_MODE);
+  MAP_Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);
+  MAP_Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
+
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- PWM
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- TA0.1 -> P2.4 TA0.2 -> P2.5
+  // TA0.3 -> P2.6
+  // TA0.4 -> P2.7
+  MAP_GPIO_setAsPeripheralModuleFunctionOutputPin(
+      GPIO_PORT_P2, GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7,
+      GPIO_PRIMARY_MODULE_FUNCTION); // enable the GPIO PIN as PWM generator
+
+  MAP_Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfig_TA01);
+  MAP_Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfig_TA02);
+  MAP_Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfig_TA03);
+  MAP_Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfig_TA04);
+}
+
+/*
+ * Function: critical_section_config
+ * ----------------------------------
+ * Configure the critical section for the MSP432
+ *
+ * Arguments: None
+ * Returns: None
+ */
+void critical_section_config() {
+  MAP_Interrupt_disableMaster(); // disable all interrupts
+  setup_GPIO();
+  setup_timer();
+  MAP_Interrupt_enableMaster(); // enable all interrupts
+}
+
+/**
+ * main.c
+ */
+void main(void) {
+  MAP_WDT_A_holdTimer();     // halt watch-dog timer
+  critical_section_config(); // configuring the critical section
+  resetParams();             // reset all parameters
+
+  while (1) {
+    if (motor_on)
+      run_motor(); // control motor with duty cycle and PID controller
+    else
+      stop_motor();
+  }
+}

@@ -1,0 +1,181 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,graphicx,mathrsfs}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{color}
+
+% format and layout
+\parindent = 0 pt
+\parskip = 8 pt 
+\addtolength{\textwidth}{1in}
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\textheight}{1.6in}
+\addtolength{\topmargin}{-0.8in}
+
+% time and date in footer
+\usepackage{scrtime} 
+\usepackage[draft,scrtime]{prelim2e}
+\renewcommand{\PrelimWords}{Last updated \thistime,~\today}
+\renewcommand{\PrelimText}{\textnormal{\tiny\PrelimTextStyle \PrelimWords}}
+
+\graphicspath{{./Figs/}}
+
+%--------------------------------------------------------------------
+
+\input{defs-mfml}
+
+%--------------------------------------------------------------------
+
+\begin{document}
+
+%--------------------------------------------------------------------
+
+\noindent
+{\bf\large Math Foundations of ML, Fall 2022} \\[3mm]
+{\bf\large Homework \#6} \\[3mm]
+{\bf Due Monday November 14, at 5:00pm ET}\\[3mm]
+%{\bf Reading: XXXX}
+
+{\bf As stated in the syllabus, unauthorized use of previous semester course materials is strictly prohibited in this course.}
+
+\begin{enumerate}
+%--------------------------------------------------------------------
+
+
+\item Suppose that two random variables $(X,Y)$ have joint pdf $f_{X,Y}(x,y)$.  Find an expression for the pdf $f_Z(z)$ where $Z=X+Y$.  You can start by realizing that 
+\[
+	F_Z(u|X=\beta) = \P{Z\leq u|X=\beta} = \P{Y\leq u-\beta|X=\beta}.
+\]
+You can combine the expressions above by integrating over $\beta$, and see that the resulting expression corresponds to an integral of $f_{X,Y}(x,y)$ over a half plane.  From this, you can get the pdf for $Z$ by applying the Fundamental Theorem of Calculus.  How does your expression simplify if $X$ and $Y$ are independent?  (Convolution!)
+
+%--- 
+\vspace{4mm} 
+\item Let $X_1,X_2,\ldots$ be independent uniform random variables,
+\[
+	X_n\sim\mathrm{Uniform}(-1/2,1/2),\quad\text{meaning}\quad 
+	f_X(x) = \begin{cases} 1, & -1/2\leq x\leq 1/2 \\ 0, & \text{otherwise.} \end{cases}
+\]
+\begin{enumerate}
+
+	\item What is the density function for $Y=X_1+X_2+X_3$?  (If you compute this correctly, you will meet an old friend.)
+	
+	\item The \emph{moment generating function} of a random variable is
+	\[
+		\varphi_X(t) = \E\left[\e^{tX}\right].
+	\]
+	It is a fact that if $\varphi_X(t)=\varphi_W(t)$ for all $t$, then $X$ and $W$ have the same distribution.  It is a fact that if $G\sim\mathrm{Normal}(0,\sigma^2)$, then $\varphi_G(t) = \e^{\sigma^2t^2/2}$.  Let
+	\[
+		Y_N = \frac{1}{\sqrt{N}}\sum_{n=1}^NX_n.
+	\]
+	Find an expression for $\varphi_{Y_N}(t)$.  Plot $\varphi_{Y_N}(t)$ and $\varphi_G(t)$ for $\sigma^2=\var(Y)=\var(X_n) = 1/12$ on the same set of axes for $N=1,2,5,10$ and $0\leq t\leq 5$.  What might you conclude about $Y_N$ as $N\rightarrow\infty$? (\emph{\textbf{Bonus question}: argue rigorously that $\varphi_{Y_N}(t)\rightarrow\varphi_G(t)$ for all $t$.})
+	
+	\item It is a fact that if $\phi(z)$ is a monotonically increasing function, then for any random variable $Z$,
+	\[
+		\P{Z > u} = \P{\phi(Z) >\phi(u)}. 
+	\]
+	Use $\phi(z) = e^{tz}$ and the Markov inequality to derive a bound on $\P{Z_N > u}$, where
+	\[
+		Z_N = \frac{1}{N}\sum_{n=1}^NX_n.
+	\]
+	For the special case of $t=4u/N$, compare this bound, as a function of $u$, to that obtained using the Chebsyshev inequality.
+\end{enumerate}
+
+
+%--------------------------------------------------------------------
+\vspace{4mm}
+\item Let $Z_1,\ldots,Z_N$ be a sequence of independent Gaussian random variables with mean $0$ and variance $1$.  You observe the random vector $X$ in $\R^N$ that is generated through the autoregressive process
+\[
+	X_k = \begin{cases} Z_1, &k=1 \\ aX_{k-1}+Z_k, &k > 1.\end{cases}
+\]	
+Given $X=\vx$, find the MLE for $a\in\R$.  (Hint: Conditional independence.)  (Further hint: The conditional independence structure makes this a Markov process, meaning that we can factor the distribution for $X\in\R^N$ as 
+\[
+	f_X(\vx) = f_{X_1}(x_1)f_{X_2}(x_2|x_1)f_{X_3}(x_3|x_2)\cdots f_{X_N}(x_N|x_{N-1}).
+\]
+)
+
+%--------------------------------------------------------------------
+\vspace{4mm} 
+\item Let $X$ be a Gaussian random vector taking values in $\R^N$, let $E$ be a Gaussian random vector taking values in $\R^M$, and let $\mA$ be a $M\times N$ matrix.  We have
+\[
+	X\sim\mathrm{Normal}(\vzero,\mR_x),\quad
+	E\sim\mathrm{Normal}(\vzero,\mR_e),\quad
+	\text{$X,E$ independent}.
+\]
+We will make observation of the random vector
+\[
+	Y = \mA X + E.
+\]
+\begin{enumerate}
+
+	\item From the lecture notes, it is clear that $Y$ is a Gaussian random vector in $\R^M$ and that $\E[Y]=\vzero$.  Find the covariance matrix for the Gaussian random vector $\begin{bmatrix} X \\ Y \end{bmatrix}$ that takes values in $\R^{N+M}$.
+	
+	\item Suppose we observe $Y=\vy$.  What is the minimum mean-square error estimate of $X$ given $Y=\vy$?
+	
+	\item Suppose $\mR_x = \sigma_x^2\mId$ and $\mR_e = \sigma_e^2\mId$.  In this case, your MMSE estimator should look familiar, and you should see immediately that $\hat{x}_{MMSE}$ is in the row space of $\mA$.  What are the $\hat{\alpha}_n$ is the expression below?
+	\[
+		\hat{\vx}_{MMSE} = \sum_{n=1}^N\alpha_n\vv_n,\quad\text{where the $\vv_n$ are the right singular vectors of $\mA$}.
+	\]
+	
+	\item Take $\mR_x$ and $\mR_e$ as in part (c), and assume that $\mA$ has full column rank.  What is MSE $\E[\|\hat{\vx}_{MMSE}-X\|_2^2]$ of the MMSE estimate $\hat{\vx}_{MMSE}$?
+\end{enumerate}
+
+
+%--- 
+\vspace{4mm} 
+\item Let $\mA$ be an $M\times N$ matrix with full column rank.  Let $E$ be a Gaussian random vector in $\R^M$ with mean $\vzero$ and covariance $\mR_e$.   Suppose we observe
+\[
+	Y = \mA\vtheta_0 + E,
+\]
+where $\vtheta\in\R^N$ is unknown.
+\begin{enumerate}
+	\item What is the distribution of $Y$ and how does it depend on $\vtheta_0$?
+	\item Find a closed form expression for the maximum likelihood estimate of $\vtheta_0$.  (In this case, we are working from a single sample of a random vector.)
+	\item What is the distribution of the MLE estimator $\hat\mTheta$?  Is $\hat\mTheta$ unbiased?
+	\item What is the MSE of the MLE, $\E[\|\hat\mTheta-\vtheta_0\|_2^2]$?
+	\item Compute the Fisher information matrix $\mJ(\vtheta_0)$ and verify that the MLE meets the Cramer-Rao lower bound.
+	\item Defend the following statement: The MLE is the best unbiased estimator of $\vtheta_0$.  
+\end{enumerate}
+
+%--- 
+\vspace{4mm} 
+\item A Cauchy random variable with ``location parameter'' $\nu$ has a density function
+\begin{equation}
+	\label{eq:cauchyrv}
+	f_X(x;\nu) = \frac{1}{\pi(1+(x-\nu)^2)},\quad x\in\R.
+\end{equation}
+Despite its simple definition, this is a strange animal.  First of all, its mean is not defined, as the integral $\int x/(1+x^2)~\d{x}$ is not absolutely convergent.  It is also easy to see that the variance is infinite.  But as you can see (especially if you sketch it), the density is symmetric around $\nu$, and $\nu$ is certainly the median.  
+
+ Let $X_1,X_2,\ldots,X_N$ be iid Cauchy random variables distributed as in \eqref{eq:cauchyrv}.  From observed data $X_1=x_1,\ldots,X_N=x_N$, we will compare three estimators: the sample mean
+	\[
+		\hat\nu_{mn} = \frac{1}{N}\sum_{n=1}^Nx_n,
+	\]
+	the sample median 
+	\[
+		\hat\nu_{md} = \begin{cases}
+			x_{((N+1)/2)}, & $N$\text{ odd}, \\[2mm]
+			\frac{x_{(N/2)}+x_{(N/2+1)}}{2}, & $N$\text{ even},
+		\end{cases}
+	\]
+	where $x_{(i)}$ is the $i$th largest value in $\{x_1,\ldots,x_N\}$, and the MLE
+	\[
+		\hat\nu_{mle} = \argmax_\nu L(\nu;x_1,\ldots,x_N) = \argmax_{\nu}\sum_{n=1}^N\ell(\nu;x_n)
+	\]
+	where $\ell(\nu;x_n) = \log f_X(x_n;\nu)$.
+\begin{enumerate}
+	\item One particular draw of data for $N=50$ is variable \texttt{x} in the file \texttt{hw06p6a.mat}.  Plot the log likelihood function, and report the MLE for $\nu$.  Your MLE will of course be approximate, but make sure yours is accurate to within $10^{-2}$ to the true MLE.  I will give you a hint here and tell you that the true value of $\nu$ is somewhere in the interval $[0,5]$.
+	
+	\item The file \texttt{hw06p6b.mat} contains a matrix \texttt{X}.  This is an $N\times Q$ matrix, where $N=50$ and $Q=1000$; each entry is an independent Cauchy random variable with $\nu_0=3$.  Treating each column of \texttt{X} as a single draw of the data for $N=50$, compute the sample mean, sample median, and MLE for each column.  From these, report the empirical mean squared error (by averaging $(\hat\nu-\nu_0)^2$ over all $Q$ trials) for each of the three estimators.
+	
+	\item Find an integral expression for the expected log likelihood function $e(\nu) = \E[\ell(\nu;X)]$ when $X$ has Cauchy density $f_X(x;\nu_0)$ as in \eqref{eq:cauchyrv}.  Your expression should have the form
+	\[
+		e(\nu) = \int_{-\infty}^\infty \text{(something that depends on $x,\nu,\nu_0$)}~\d{x}.
+	\]
+	Compute $e(\nu)$ for $\nu_0=3$ for 250 equally spaced values of $\nu$ between $0$ and $5$.  You can do this using numerical integration (the \texttt{integral} function in MATLAB or \texttt{scipy.integrate.quad} in Python).  Make a plot of $e(\nu) = \E[\ell(\nu;X)]$.
+	
+	\item Plot, overlayed on the same axes, the (renormalized) log likelihood functions $\frac{1}{N}\sum_{n=1}^{N} \ell(\nu;x_n)$ as a function of $\nu\in[0,5]$ for each of the first $10$ columns of \texttt{X} from part (b).  On top of this, plot $e(\nu) = \E[\ell(\nu;X)]$ from part (c) as a dotted line.
+	
+\end{enumerate}
+
+%--------------------------------------------------------------------
+\end{enumerate}
+\end{document}
