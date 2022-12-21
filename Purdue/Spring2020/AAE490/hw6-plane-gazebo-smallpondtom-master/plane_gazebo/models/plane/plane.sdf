@@ -1,0 +1,612 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+  <model name="plane">
+    <pose>0 0 0.1 0 0 0</pose>
+    <link name="body">
+      <inertial>
+        <pose>0.10 0 0 0 0 0</pose>
+        <mass>0.28</mass>
+        <inertia>
+          <ixx>1e-3</ixx>
+          <iyy>1e-3</iyy>
+          <izz>1e-3</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="cp-left-wing">
+        <pose>0 0.2 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+
+      <visual name="cp-right-wing">
+        <pose>0 -0.2 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+
+      <visual name="cp-htail">
+        <pose>-0.48 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+
+      <visual name="cp-vtail">
+        <pose>-0.48 0 0.03 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+
+      <visual name="fuselage-visual">
+        <pose>-0.1 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.8 0.03 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <collision name="fuselage-collision">
+        <pose>-0.1 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.8 0.03 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <visual name="left-wing-visual">
+        <pose>0.05 0.25 0 0.1 0 0.12</pose>
+        <geometry>
+          <box>
+            <size>0.2 0.5 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <collision name="left-wing-collision">
+        <pose>0.05 0.25 0 0.1 0 0.12</pose>
+        <geometry>
+          <box>
+            <size>0.2 0.5 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <visual name="right-wing-visual">
+        <pose>0.05 -0.25 0 -0.1 0 -0.12</pose>
+        <geometry>
+          <box>
+            <size>0.2 0.5 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <collision name="right-wing-collision">
+        <pose>0.05 -0.25 0 -0.1 0 -0.12</pose>
+        <geometry>
+          <box>
+            <size>0.2 0.5 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <visual name="htail-visual">
+        <pose>-0.50 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.3 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <collision name="htail-collision">
+        <pose>-0.50 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.15 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <visual name="vtail-visual">
+        <pose>-0.50 0 0.05 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <collision name="vtail-collision">
+        <pose>-0.50 0 0.05 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.01 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+
+    </link>
+
+    <link name="left-gear">
+      <pose>0.10 0.1 -0.07 1.57 0 0</pose>
+      <inertial>
+        <mass>0.002</mass>
+        <inertia>
+          <ixx>1e-6</ixx>
+          <iyy>1e-6</iyy>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="gear-visual">
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+      </visual>
+
+      <collision name="gear-collision">
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.3</mu>
+              <mu2>0.3</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <max_vel>0.1</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+    </link>
+
+    <joint name="left-gear-joint" type="revolute">
+      <parent>body</parent>
+      <child>left-gear</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <link name="right-gear">
+      <pose>0.10 -0.1 -0.07 1.57 0 0</pose>
+      <inertial>
+        <mass>0.002</mass>
+        <inertia>
+          <ixx>1e-6</ixx>
+          <iyy>1e-6</iyy>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="gear-visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+      </visual>
+
+      <collision name="gear-collision">
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.3</mu>
+              <mu2>0.3</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <max_vel>0.1</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+    </link>
+
+    <joint name="right-gear-joint" type="revolute">
+      <parent>body</parent>
+      <child>right-gear</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <link name="rear-gear">
+      <pose>-0.5 0 -0.02 1.57 0 0</pose>
+      <inertial>
+        <mass>0.002</mass>
+        <inertia>
+          <ixx>1e-6</ixx>
+          <iyy>1e-6</iyy>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="gear-visual">
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+      </visual>
+
+      <collision name="gear-collision">
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.3</mu>
+              <mu2>0.3</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <max_vel>0.1</max_vel>
+              <min_depth>0.002</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+    </link>
+
+    <joint name="rear-gear-joint" type="revolute">
+      <parent>body</parent>
+      <child>rear-gear</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <link name="elevator">
+      <pose>-0.58 0 0 0 0 0</pose>
+      <inertial>
+        <mass>0.002</mass>
+        <inertia>
+          <ixx>1e-6</ixx>
+          <iyy>1e-6</iyy>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="elevator-visual">
+        <geometry>
+          <box>
+            <size>0.05 0.3 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <collision name="elevator-collision">
+        <geometry>
+          <box>
+            <size>0.05 0.3 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+
+    </link>
+
+    <joint name="elevator-joint" type="revolute">
+      <pose>0.02 0 0 0 0 0</pose>
+      <parent>body</parent>
+      <child>elevator</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>1e-5</dynamics>
+        <limit>
+          <lower>-0.5</lower>
+          <upper>0.5</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <implicit_spring_damper>true</implicit_spring_damper>
+        </ode>
+      </physics>
+    </joint>
+
+    <link name="rudder">
+      <pose>-0.58 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.002</mass>
+        <inertia>
+          <ixx>1e-6</ixx>
+          <iyy>1e-6</iyy>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="rudder-visual">
+        <geometry>
+          <box>
+            <size>0.05 0.01 0.1</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <collision name="rudder-collision">
+        <geometry>
+          <box>
+            <size>0.05 0.01 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="rudder-joint" type="revolute">
+      <pose>0.02 0 0 0 0 0</pose>
+      <parent>body</parent>
+      <child>rudder</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <dynamics>
+          <damping>1e-5</damping>
+        </dynamics>
+        <limit>
+          <lower>-0.5</lower>
+          <upper>0.5</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <implicit_spring_damper>true</implicit_spring_damper>
+        </ode>
+      </physics>
+    </joint>
+
+    <link name="propeller">
+      <pose>0.31 0 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1e-6</ixx>
+          <iyy>1e-6</iyy>
+          <izz>1e-6</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="visual">
+        <pose>0 0 0 0 1.57 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.5 0.5 0.5</scale>
+            <uri>model://plane/meshes/iris_prop_ccw.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+<!--      <visual name="cp-top">
+        <pose>0 0 0.04 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+
+      <visual name="cp-bottom">
+        <pose>0 0 -0.04 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>-->
+
+    </link>
+
+    <joint name="prop-joint" type="revolute">
+      <parent>body</parent>
+      <child>propeller</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <dynamics>
+          <damping>1e-5</damping>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <implicit_spring_damper>true</implicit_spring_damper>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <update_rate>20</update_rate>
+      </sensor>
+    </joint>
+
+    <plugin name="aero_prop_top" filename="libLiftDragPlugin.so">
+      <link_name>propeller</link_name>
+      <a0>0.4</a0>
+      <cla>4.75</cla>
+      <cda>0.65</cda>
+      <cma>0</cma>
+      <alpha_stall>1.5</alpha_stall>
+      <cla_stall>-3.85</cla_stall>
+      <cda_stall>-0.92</cda_stall>
+      <cma_stall>0</cma_stall>
+      <cp>0 0 0.04</cp>
+      <area>2e-4</area>
+      <air_density>1.2041</air_density>
+      <forward>0 -1 0</forward>
+      <upward>1 0 0</upward>
+    </plugin>
+
+    <plugin name="aero_prop_bot" filename="libLiftDragPlugin.so">
+      <link_name>propeller</link_name>
+      <a0>0.4</a0>
+      <cla>4.75</cla>
+      <cda>0.65</cda>
+      <cma>0</cma>
+      <alpha_stall>1.5</alpha_stall>
+      <cla_stall>-3.85</cla_stall>
+      <cda_stall>-0.92</cda_stall>
+      <cma_stall>0</cma_stall>
+      <cp>0 0 -0.04</cp>
+      <area>2e-4</area>
+      <air_density>1.2041</air_density>
+      <forward>0 1 0</forward>
+      <upward>1 0 0</upward>
+    </plugin>
+
+    <plugin name="left_wing" filename="libLiftDragPlugin.so">
+      <link_name>body</link_name>
+      <a0>0.05</a0>
+      <cla>4.75</cla>
+      <cda>0.64</cda>
+      <cma>-1.8</cma>
+      <alpha_stall>0.33</alpha_stall>
+      <cla_stall>-3.85</cla_stall>
+      <cda_stall>-0.92</cda_stall>
+      <cma_stall>0</cma_stall>
+      <cp>0 0.2 0</cp>
+      <area>0.1</area>
+      <air_density>1.2041</air_density>
+      <forward>1 0 0</forward>
+      <upward>0 0 0.95</upward>
+    </plugin>
+
+    <plugin name="right_wing" filename="libLiftDragPlugin.so">
+      <link_name>body</link_name>
+      <a0>0.05</a0>
+      <cla>4.75</cla>
+      <cda>0.64</cda>
+      <cma>-1.8</cma>
+      <alpha_stall>0.33</alpha_stall>
+      <cla_stall>-3.85</cla_stall>
+      <cda_stall>-0.92</cda_stall>
+      <cma_stall>0</cma_stall>
+      <cp>0 -0.2 0</cp>
+      <area>0.1</area>
+      <air_density>1.2041</air_density>
+      <forward>1 0 0</forward>
+      <upward>0 0 0.95</upward>
+    </plugin>
+
+    <plugin name="htail" filename="libLiftDragPlugin.so">
+      <link_name>body</link_name>
+      <a0>0</a0>
+      <cla>4.75</cla>
+      <cda>0.64</cda>
+      <cma>-1.8</cma>
+      <alpha_stall>0.33</alpha_stall>
+      <cla_stall>-3.85</cla_stall>
+      <cda_stall>-0.92</cda_stall>
+      <cma_stall>0</cma_stall>
+      <cp>-0.48 0 0</cp>
+      <area>0.05</area>
+      <air_density>1.2041</air_density>
+      <forward>1 0 0</forward>
+      <upward>0 0 1</upward>
+      <control_joint_name>elevator-joint</control_joint_name>
+      <control_joint_rad_to_cl>-4.0</control_joint_rad_to_cl>
+    </plugin>
+
+
+    <plugin name="vtail" filename="libLiftDragPlugin.so">
+      <link_name>body</link_name>
+      <a0>0</a0>
+      <cla>4.75</cla>
+      <cda>0.64</cda>
+      <cma>-1.8</cma>
+      <alpha_stall>0.33</alpha_stall>
+      <cla_stall>-3.85</cla_stall>
+      <cda_stall>-0.92</cda_stall>
+      <cma_stall>0</cma_stall>
+      <cp>-0.48 0 0.03</cp>
+      <area>0.05</area>
+      <air_density>1.2041</air_density>
+      <forward>1 0 0</forward>
+      <upward>0 1 0</upward>
+      <control_joint_name>rudder-joint</control_joint_name>
+      <control_joint_rad_to_cl>4.0</control_joint_rad_to_cl>
+    </plugin>
+
+    <plugin name="plane_demo_plugin" filename="libPlaneDemoPlugin.so">
+      <engine>
+        <joint_name>prop-joint</joint_name>
+        <inc_key>101</inc_key>
+        <dec_key>113</dec_key>
+        <inc_val>0.005</inc_val>
+        <max_val>0.02</max_val>
+        <min_val>0.0</min_val>
+        <p>1</p>
+        <i>0</i>
+        <d>0</d>
+        <cmd_max>1.0</cmd_max>
+        <cmd_min>-1.0</cmd_min>
+      </engine>
+
+      <control name="elevator_control">
+        <joint_name>elevator-joint</joint_name>
+        <inc_key>115</inc_key>
+        <dec_key>119</dec_key>
+        <inc_val>0.02</inc_val>
+        <max_val>0.25</max_val>
+        <min_val>-0.25</min_val>
+        <p>1</p>
+        <i>0</i>
+        <d>0</d>
+        <cmd_max>1.0</cmd_max>
+        <cmd_min>-1.0</cmd_min>
+      </control>
+
+      <control name="rudder_control">
+        <joint_name>rudder-joint</joint_name>
+        <inc_key>100</inc_key>
+        <dec_key>97</dec_key>
+        <inc_val>0.02</inc_val>
+        <max_val>0.2</max_val>
+        <min_val>-0.2</min_val>
+        <p>1</p>
+        <i>0</i>
+        <d>0</d>
+        <cmd_max>1.0</cmd_max>
+        <cmd_min>-1.0</cmd_min>
+      </control>
+    </plugin>
+  </model>
+</sdf>
+
+
+
